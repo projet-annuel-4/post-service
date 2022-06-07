@@ -41,7 +41,12 @@ public class PostController {
 
     @PostMapping()
     public ResponseEntity<?> create(@RequestBody PostRequest postRequest){
+        //TODO :
+        // - Vérifier que le content n'est pas vide (avec annotation spring)
+        // - Erreur plus claire lorsque le User n'existe pas
         var user = userService.getById(postRequest.getUserId());
+
+        //TODO : Ne passe jamais dans le if
         if(user == null){
             return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
         }
@@ -53,8 +58,7 @@ public class PostController {
             tagService.create(tagRequest, post);
         }
 
-
-        if(!Objects.equals(postRequest.getAttachmentDescription(), "")){
+        if(!Objects.equals(postRequest.getAttachmentUrl(), "") && !Objects.equals(postRequest.getAttachmentDescription(), "")){
             var attachmentRequest = attachmentMapper.toRequest(
                     postRequest.getAttachmentUrl(),
                     postRequest.getAttachmentDescription(),
@@ -62,7 +66,6 @@ public class PostController {
             );
             attachmentService.create(attachmentRequest, post);
         }
-
 
         return new ResponseEntity<>(toResponse(post), HttpStatus.CREATED);
     }
@@ -81,6 +84,8 @@ public class PostController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getAllByUser(@PathVariable @NotNull Long userId){
         var user = userService.getById(userId);
+
+        // TODO : Ne passe pas dans le if, ne renvoie pas d'erreur lorsque le user n'existe pas
         if(user == null){
             return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
         }
@@ -114,6 +119,7 @@ public class PostController {
 
 
 
+    //TODO : Mettre dans une classe PostMapper
     private PostResponse toResponse(PostEntity postEntity){
         return new PostResponse()
                 .setContent(postEntity.getContent())
