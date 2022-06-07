@@ -33,4 +33,13 @@ public class TagEntity {
         this.name = name;
         return this;
     }
+
+    public PostEntity getPost() {
+        return post;
+    }
+
+    public TagEntity setPost(PostEntity post) {
+        this.post = post;
+        return this;
+    }
 }
