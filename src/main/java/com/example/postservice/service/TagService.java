@@ -6,6 +6,8 @@ import com.example.postservice.data.repository.TagRepository;
 import com.example.postservice.data.request.TagRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TagService {
 
@@ -21,5 +23,9 @@ public class TagService {
                 .setPost(postEntity);
 
         return tagRepository.save(tag);
+    }
+
+    public List<TagEntity> getAllTagByName(String tagName){
+        return tagRepository.getTagEntitiesByName(tagName);
     }
 }

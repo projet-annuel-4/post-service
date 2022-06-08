@@ -2,6 +2,7 @@ package com.example.postservice.controller;
 
 
 import com.example.postservice.data.entities.PostEntity;
+import com.example.postservice.data.entities.UserEntity;
 import com.example.postservice.data.request.PostRequest;
 import com.example.postservice.data.response.PostResponse;
 import com.example.postservice.domain.mapper.AttachmentMapper;
@@ -43,15 +44,13 @@ public class PostController {
     public ResponseEntity<?> create(@RequestBody PostRequest postRequest){
         //TODO :
         // - Vérifier que le content n'est pas vide (avec annotation spring)
-        // - Erreur plus claire lorsque le User n'existe pas
-        var user = userService.getById(postRequest.getUserId());
 
-        //TODO : Ne passe jamais dans le if
-        if(user == null){
+        var user = userService.getById(postRequest.getUserId());
+        if(user.isEmpty()){
             return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
         }
 
-        var post = postService.create(postRequest, user);
+        var post = postService.create(postRequest, user.get());
 
         if(!Objects.equals(postRequest.getTagName(), "")) {
             var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.getId());
@@ -86,26 +85,17 @@ public class PostController {
         var user = userService.getById(userId);
 
         // TODO : Ne passe pas dans le if, ne renvoie pas d'erreur lorsque le user n'existe pas
-        if(user == null){
+        if(user.isEmpty()){
             return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
         }
 
-         var posts = postService.getAllByUser(user)
+         var posts = postService.getAllByUser(user.get())
                 .stream()
                 .map(this::toResponse)
-                .collect(toList());;
+                .collect(toList());
 
         return new ResponseEntity<>(posts, HttpStatus.FOUND);
     }
-
-
-
-    // get les Posts des followers
-    // liké un post
-    // commenter un post
-    // ajouter un tag
-    // get all by tag
-    //bonus : Get les posts likés
 
     @GetMapping()
     public ResponseEntity<?> getAll(){
@@ -116,6 +106,30 @@ public class PostController {
 
         return new ResponseEntity<>(posts, HttpStatus.FOUND);
     }
+
+    // get all by tag
+    /** select * from post where id = (select post_id from tag where name = "js"); **/
+    @GetMapping("{tagName}")
+    public ResponseEntity<?> getAllByTag(@PathVariable String tagName){
+
+        var tags = tagService.getAllTagByName(tagName);
+
+
+
+        return new ResponseEntity<>(HttpStatus.FOUND);
+    }
+
+
+
+
+    // get les Posts des followers
+    // liker un post
+    // commenter un post
+    //get les personne qui ont liké un post
+
+    // Get les posts likés
+
+
 
 
 
