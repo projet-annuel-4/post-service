@@ -4,7 +4,6 @@ import com.example.postservice.data.entities.AttachmentEntity;
 import com.example.postservice.data.entities.PostEntity;
 import com.example.postservice.data.repository.AttachmentRepository;
 import com.example.postservice.data.request.AttachmentRequest;
-import com.example.postservice.domain.mapper.AttachmentMapper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,4 +23,19 @@ public class AttachmentService {
 
         return attachmentRepository.save(attachment);
     }
+
+    public AttachmentEntity update(AttachmentRequest attachmentRequest){
+        var attachment = attachmentRepository.findByUrlAndPostId(attachmentRequest.getUrl(),
+                                                                                attachmentRequest.getPostId())
+                .setUrl(attachmentRequest.getUrl())
+                .setDescription(attachmentRequest.getDescription());
+
+        return attachmentRepository.save(attachment);
+    }
+
+    public AttachmentEntity getByUrlAndPostId(String url, Long postId){
+        return attachmentRepository.findByUrlAndPostId(url, postId);
+    }
+
+
 }

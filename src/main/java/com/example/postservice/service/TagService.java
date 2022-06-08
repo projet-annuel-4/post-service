@@ -7,6 +7,7 @@ import com.example.postservice.data.request.TagRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TagService {
@@ -25,7 +26,26 @@ public class TagService {
         return tagRepository.save(tag);
     }
 
-    public List<TagEntity> getAllTagByName(String tagName){
-        return tagRepository.getTagEntitiesByName(tagName);
+    public TagEntity update(TagRequest tagRequest){
+        var tag = tagRepository.findTagEntitiesByNameAndPostId(tagRequest.getName(),
+                                                                        tagRequest.getPostId())
+                .setName(tagRequest.getName());
+        return tagRepository.save(tag);
+    }
+
+    public Optional<TagEntity> getById(Long tagId){
+        return tagRepository.findById(tagId);
+    }
+
+    public TagEntity getByName(String tagName){
+        return tagRepository.findByName(tagName);
+    }
+
+    public TagEntity getByNameAndPostId(String tagName, Long postId){
+        return tagRepository.findTagEntitiesByNameAndPostId(tagName,postId);
+    }
+
+    public Optional<List<TagEntity>> getAllTagByName(String tagName){
+        return tagRepository.findTagEntitiesByName(tagName);
     }
 }

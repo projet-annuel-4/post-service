@@ -4,4 +4,6 @@ import com.example.postservice.data.entities.AttachmentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AttachmentRepository extends JpaRepository<AttachmentEntity, Long> {
+
+    AttachmentEntity findByUrlAndPostId(String url, Long post_id);
 }

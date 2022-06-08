@@ -28,7 +28,7 @@ public class TagController {
     }
 
 
-
+/*
     @GetMapping("/name/{tagName}")
     public ResponseEntity<List<TagResponse>> getAllByName(@PathVariable String tagName){
         var tags = tagService.getAllTagByName(tagName)
@@ -38,6 +38,8 @@ public class TagController {
 
         return new ResponseEntity<>(tags, HttpStatus.FOUND);
     }
+
+ */
 
 
 

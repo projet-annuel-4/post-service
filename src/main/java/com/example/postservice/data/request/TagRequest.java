@@ -14,7 +14,7 @@ public class TagRequest {
         return this;
     }
 
-    public Long getId() {
+    public Long getPostId() {
         return postId;
     }
 
