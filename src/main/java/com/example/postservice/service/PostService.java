@@ -114,8 +114,7 @@ public class PostService {
         attachmentRepository.deleteAllByPostId(post.getId());
         tagRepository.deleteAllByPostId(post.getId());
         likeRepository.deleteAllByPostId(post.getId());
-
-        //TODO : supprimer les commentaires sans supprimer les posts associés
+        commentRepository.deleteAllByPostId(post.getId());
 
         post.setUser(null);
         postRepository.deleteById(post.getId());
