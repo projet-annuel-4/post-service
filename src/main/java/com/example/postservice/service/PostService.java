@@ -1,10 +1,12 @@
 package com.example.postservice.service;
 
+import com.example.postservice.data.entities.LikeEntity;
 import com.example.postservice.data.entities.PostEntity;
 import com.example.postservice.data.entities.TagEntity;
 import com.example.postservice.data.entities.UserEntity;
 import com.example.postservice.data.repository.LikeRepository;
 import com.example.postservice.data.repository.PostRepository;
+import com.example.postservice.data.repository.UserRepository;
 import com.example.postservice.data.request.PostRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +21,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -48,9 +52,9 @@ public class PostService {
         return postRepository.getAllByUser(user);
     }
 
-    public ArrayList<Object> getAllByTag(List<TagEntity> tagEntityList){
+    public ArrayList<Optional<PostEntity>> getAllByTag(List<TagEntity> tagEntityList){
 
-        var posts = new ArrayList<>();
+        var posts = new ArrayList<Optional<PostEntity>>();
 
         tagEntityList.forEach(tagEntity -> {
             posts.add(postRepository.findById(tagEntity.getPost().getId()));
@@ -68,25 +72,24 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    //TODO : A tester
-    public ArrayList<Object> getUserLiked(List<LikeEntity> likeEntityList){
+    public ArrayList<Optional<UserEntity>> getUserLiked(List<LikeEntity> likeEntityList){
 
-        var usersLiked = new ArrayList<>();
+        var usersLiked = new ArrayList<Optional<UserEntity>>();
 
         likeEntityList.forEach(likeEntity -> {
-            usersLiked.add(postRepository.findById(likeEntity.getUser().getId()));
+            usersLiked.add(userRepository.findById(likeEntity.getUser().getId()));
         });
 
         return usersLiked;
     }
 
     //TODO : A tester
-    public ArrayList<Object> getPostLiked(List<PostEntity> postEntityList){
+    public ArrayList<Optional<PostEntity>> getPostLiked(List<LikeEntity> likeEntityList){
 
-        var postsLiked = new ArrayList<>();
+        var postsLiked = new ArrayList<Optional<PostEntity>>();
 
-        postEntityList.forEach(postEntity -> {
-            postsLiked.add(postRepository.findById(postEntity.getUser().getId()));
+        likeEntityList.forEach(likeEntity -> {
+            postsLiked.add(postRepository.findById(likeEntity.getPost().getId()));
         });
 
         return postsLiked;

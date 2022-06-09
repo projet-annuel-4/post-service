@@ -70,7 +70,7 @@ public class PostController {
 
     @PutMapping("/{postId}")
     public ResponseEntity<?> update(@PathVariable Long postId, @RequestBody PostRequest postRequest){
-        //TODO : Mettre à jour le fromat des dates dans les entities
+        //TODO : Mettre à jour le format des dates dans les entities
 
         var post = postService.getById(postId);
         if(post.isEmpty()){
@@ -215,10 +215,8 @@ public class PostController {
      * @param postId
      * @return Users who liked the post
      */
-    
-     //TODO : A tester
-    @GetMapping("/{postId}/userLiked/")
-    public ResponseEntity<?> usersliked(@PathVariable Long postId){
+    @GetMapping("/{postId}/userLiked")
+    public ResponseEntity<?> usersLiked(@PathVariable Long postId){
         var post = postService.getById(postId);
         if(post.isEmpty()){
             return new ResponseEntity<>(" Post not found", HttpStatus.NOT_FOUND);
@@ -233,28 +231,24 @@ public class PostController {
         return new ResponseEntity<>(userLiked, HttpStatus.FOUND);
     }
 
-
-    // Get les posts que le user a liké
     /**
      * @apiNote SELECT * FROM post WHERE id = ( SELECT post_id FROM user_like WHERE user_id = id du user )
-     * @param userId
+     * @param userId : Id of the user
      * @return Posts that the user liked
      */
-    
-    //TODO : A tester
-    @GetMapping("/{userId}/postLiked/")
+    @GetMapping("/userId/{userId}/postLiked")
     public ResponseEntity<?> postLiked(@PathVariable Long userId){
         var user = userService.getById(userId);
         if(user.isEmpty()){
             return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
         }
 
-        var postLikeList = likeService.getAllByUserId(userId);
-        if(postLikeList.isEmpty()){
+        var likeList = likeService.getAllByUserId(userId);
+        if(likeList.isPresent() && likeList.get().isEmpty()){
             return new ResponseEntity<>("The user didn't like any post", HttpStatus.NO_CONTENT);
         }
         
-        var postLiked = postService.getPostLiked(postLikeList.get());
+        var postLiked = postService.getPostLiked(likeList.get());
 
         return new ResponseEntity<>(postLiked, HttpStatus.FOUND);
     }
