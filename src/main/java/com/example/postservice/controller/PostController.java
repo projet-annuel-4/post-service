@@ -211,8 +211,8 @@ public class PostController {
 
     //Get les personnes qui ont likés un post    
     /**
-     * @param postId
      * @apiNote SELECT * FROM user  WHERE id = ( SELECT user_id FROM user_like WHERE post_id = id du post )
+     * @param postId
      * @return Users who liked the post
      */
     
@@ -236,8 +236,8 @@ public class PostController {
 
     // Get les posts que le user a liké
     /**
-     * @param userId
      * @apiNote SELECT * FROM post WHERE id = ( SELECT post_id FROM user_like WHERE user_id = id du user )
+     * @param userId
      * @return Posts that the user liked
      */
     
