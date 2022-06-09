@@ -68,6 +68,30 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    //TODO : A tester
+    public ArrayList<Object> getUserLiked(List<LikeEntity> likeEntityList){
+
+        var usersLiked = new ArrayList<>();
+
+        likeEntityList.forEach(likeEntity -> {
+            usersLiked.add(postRepository.findById(likeEntity.getUser().getId()));
+        });
+
+        return usersLiked;
+    }
+
+    //TODO : A tester
+    public ArrayList<Object> getPostLiked(List<PostEntity> postEntityList){
+
+        var postsLiked = new ArrayList<>();
+
+        postEntityList.forEach(postEntity -> {
+            postsLiked.add(postRepository.findById(postEntity.getUser().getId()));
+        });
+
+        return postsLiked;
+    }
+
     @Transactional
     public void delete(Long postId){
         postRepository.deleteById(postId);

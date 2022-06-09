@@ -209,11 +209,64 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
+    //Get les personnes qui ont likés un post    
+    /**
+     * @param postId
+     * @apiNote SELECT * FROM user  WHERE id = ( SELECT user_id FROM user_like WHERE post_id = id du post )
+     * @return Users who liked the post
+     */
+    
+     //TODO : A tester
+    @GetMapping("/{postId}/userLiked/")
+    public ResponseEntity<?> usersliked(@PathVariable Long postId){
+        var post = postService.getById(postId);
+        if(post.isEmpty()){
+            return new ResponseEntity<>(" Post not found", HttpStatus.NOT_FOUND);
+        }
+
+        var postLikeList = likeService.getAllByPostId(postId);
+        if(postLikeList.isEmpty()){
+            return new ResponseEntity<>("The post has no likes", HttpStatus.NO_CONTENT);
+        }
+
+        var userLiked = postService.getUserLiked(postLikeList.get());
+        return new ResponseEntity<>(userLiked, HttpStatus.FOUND);
+    }
+
+
+    // Get les posts que le user a liké
+    /**
+     * @param userId
+     * @apiNote SELECT * FROM post WHERE id = ( SELECT post_id FROM user_like WHERE user_id = id du user )
+     * @return Posts that the user liked
+     */
+    
+    //TODO : A tester
+    @GetMapping("/{userId}/postLiked/")
+    public ResponseEntity<?> postLiked(@PathVariable Long userId){
+        var user = userService.getById(userId);
+        if(user.isEmpty()){
+            return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+        }
+
+        var postLikeList = likeService.getAllByUserId(userId);
+        if(postLikeList.isEmpty()){
+            return new ResponseEntity<>("The user didn't like any post", HttpStatus.NO_CONTENT);
+        }
+        
+        var postLiked = postService.getPostLiked(postLikeList.get());
+
+        return new ResponseEntity<>(postLiked, HttpStatus.FOUND);
+    }
+
+
+
+
+
 
     // get les Posts des followers
     // commenter un post | les commentaire sont des posts (quand même créer une entity comment)
-    //get les personne qui ont liké un post
-    // Get les posts likés d'un user
+    
     //Supprimer un post
 
 
