@@ -7,6 +7,5 @@ public interface AttachmentRepository extends JpaRepository<AttachmentEntity, Lo
 
     AttachmentEntity findByUrlAndPostId(String url, Long post_id);
     AttachmentEntity findByPostId(Long id);
-
     void deleteAllByPostId(Long postId);
 }

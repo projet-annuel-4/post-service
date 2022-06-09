@@ -292,8 +292,6 @@ public class PostController {
     }
 
 
-
-    //Get toutes les réponses d'un post
     /**
      * @apiNote SELECT id FROM post WHERE id IN (select answer_id from comment where post_id = 40);
      * @param postId : Id of the post
@@ -304,34 +302,14 @@ public class PostController {
         var post = postService.getById(postId);
         if(post.isEmpty())  return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
 
-
         var answers = postService.getAllPostAnswersById(postId);
 
         return new ResponseEntity<>(answers, HttpStatus.FOUND);
     }
 
 
-
-
-    // Get toutes les réponses d'un user
-    /**           SELECT * FROM post WHERE postId = (SELECT answerId FROM comment)
-     *            les posts qui sont des réponses    les id des posts qui sont des réponses
-     *
-     *
-     *
-     *      select a.post_id
-     *      from post a, comment b
-     *      where a.user_id = b.user_id;
-     *
-     *      select a.id from post a, comment b where a.user_id = 2 and a.user_id = b.user_id;
-     *
-     *
-     *
-     *
-     * */
-
-
-    // get les Posts des followers
+    //Get toutes les réponses d'un user (en option)
+    //Get les Posts des followers
 
 
 
