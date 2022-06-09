@@ -22,13 +22,15 @@ public class PostService {
     private final UserRepository userRepository;
     private final AttachmentRepository attachmentRepository;
     private final TagRepository tagRepository;
+    private final CommentRepository commentRepository;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
         this.attachmentRepository = attachmentRepository;
         this.tagRepository = tagRepository;
+        this.commentRepository = commentRepository;
     }
 
 
@@ -94,6 +96,17 @@ public class PostService {
         });
 
         return postsLiked;
+    }
+
+    public ArrayList<Optional<PostEntity>> getAllPostAnswersById(Long postId){
+        var comments = commentRepository.findAllByPostId(postId);
+
+        var answers = new ArrayList<Optional<PostEntity>>();
+        comments.forEach(commentEntity -> {
+            answers.add(postRepository.findById(commentEntity.getAnswer().getId()));
+        });
+
+        return answers;
     }
 
     @Transactional

@@ -269,11 +269,6 @@ public class PostController {
         return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
     }
 
-
-
-
-    // commenter un post | les commentaire sont des posts (quand même créer une entity comment)
-
     /**
      * @apiNote Côté front, appeler la route de création de post PUIS la route comment
      *          Pour commenter un commentaires -> inverser les id dans le commentRequest
@@ -299,7 +294,23 @@ public class PostController {
 
 
     //Get toutes les réponses d'un post
-    /** SELECT * FROM post WHERE post_id = (SELECT answerId FROM comment WHERE post_id = id du post) */
+    /**
+     * @apiNote SELECT id FROM post WHERE id IN (select answer_id from comment where post_id = 40);
+     * @param postId : Id of the post
+     * @return All post answers
+     * */
+    @GetMapping("{postId}/answers")
+    public ResponseEntity<?> getAllPostAnswers(@PathVariable Long postId){
+        var post = postService.getById(postId);
+        if(post.isEmpty())  return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+
+
+        var answers = postService.getAllPostAnswersById(postId);
+
+        return new ResponseEntity<>(answers, HttpStatus.FOUND);
+    }
+
+
 
 
     // Get toutes les réponses d'un user
@@ -312,8 +323,13 @@ public class PostController {
      *      from post a, comment b
      *      where a.user_id = b.user_id;
      *
+     *      select a.id from post a, comment b where a.user_id = 2 and a.user_id = b.user_id;
+     *
+     *
+     *
      *
      * */
+
 
     // get les Posts des followers
 

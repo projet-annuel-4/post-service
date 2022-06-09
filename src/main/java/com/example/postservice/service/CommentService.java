@@ -6,6 +6,8 @@ import com.example.postservice.data.entities.UserEntity;
 import com.example.postservice.data.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CommentService {
 
@@ -22,6 +24,7 @@ public class CommentService {
                 .setUser(user);
         return commentRepository.save(comment);
     }
+
 
 
 }
