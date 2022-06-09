@@ -1,12 +1,8 @@
 package com.example.postservice.data.response;
 
-import com.example.postservice.data.entities.AttachmentEntity;
-import com.example.postservice.data.entities.TagEntity;
 import com.example.postservice.data.entities.UserEntity;
 
-import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Set;
 
 public class PostResponse {
 

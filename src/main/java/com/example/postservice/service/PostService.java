@@ -4,9 +4,7 @@ import com.example.postservice.data.entities.LikeEntity;
 import com.example.postservice.data.entities.PostEntity;
 import com.example.postservice.data.entities.TagEntity;
 import com.example.postservice.data.entities.UserEntity;
-import com.example.postservice.data.repository.LikeRepository;
-import com.example.postservice.data.repository.PostRepository;
-import com.example.postservice.data.repository.UserRepository;
+import com.example.postservice.data.repository.*;
 import com.example.postservice.data.request.PostRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +20,15 @@ public class PostService {
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
+    private final AttachmentRepository attachmentRepository;
+    private final TagRepository tagRepository;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
+        this.attachmentRepository = attachmentRepository;
+        this.tagRepository = tagRepository;
     }
 
 
@@ -83,7 +85,6 @@ public class PostService {
         return usersLiked;
     }
 
-    //TODO : A tester
     public ArrayList<Optional<PostEntity>> getPostLiked(List<LikeEntity> likeEntityList){
 
         var postsLiked = new ArrayList<Optional<PostEntity>>();
@@ -96,8 +97,15 @@ public class PostService {
     }
 
     @Transactional
-    public void delete(Long postId){
-        postRepository.deleteById(postId);
+    public void delete(PostEntity post){
+        attachmentRepository.deleteAllByPostId(post.getId());
+        tagRepository.deleteAllByPostId(post.getId());
+        likeRepository.deleteAllByPostId(post.getId());
+
+        //TODO : supprimer les commentaires sans supprimer les posts associés
+
+        post.setUser(null);
+        postRepository.deleteById(post.getId());
     }
 
 

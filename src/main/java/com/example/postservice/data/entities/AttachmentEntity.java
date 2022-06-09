@@ -12,7 +12,7 @@ public class AttachmentEntity {
     private Long id;
     private String url;
     private String description;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "post_id")
     private PostEntity post;
 

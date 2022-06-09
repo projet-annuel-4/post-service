@@ -2,9 +2,11 @@ package com.example.postservice.controller;
 
 
 import com.example.postservice.data.entities.PostEntity;
+import com.example.postservice.data.request.CommentRequest;
 import com.example.postservice.data.request.PostRequest;
 import com.example.postservice.data.response.PostResponse;
 import com.example.postservice.domain.mapper.AttachmentMapper;
+import com.example.postservice.domain.mapper.CommentMapper;
 import com.example.postservice.domain.mapper.TagMapper;
 import com.example.postservice.service.*;
 import com.sun.istack.NotNull;
@@ -27,8 +29,10 @@ public class PostController {
     private final AttachmentMapper attachmentMapper;
     private final AttachmentService attachmentService;
     private final LikeService likeService;
+    private final CommentService commentService;
+    private final CommentMapper commentMapper;
 
-    public PostController(PostService postService, UserService userService, TagMapper tagMapper, TagService tagService, AttachmentMapper attachmentMapper, AttachmentService attachmentService, LikeService likeService) {
+    public PostController(PostService postService, UserService userService, TagMapper tagMapper, TagService tagService, AttachmentMapper attachmentMapper, AttachmentService attachmentService, LikeService likeService, CommentService commentService, CommentMapper commentMapper) {
         this.postService = postService;
         this.userService = userService;
         this.tagMapper = tagMapper;
@@ -36,6 +40,8 @@ public class PostController {
         this.attachmentMapper = attachmentMapper;
         this.attachmentService = attachmentService;
         this.likeService = likeService;
+        this.commentService = commentService;
+        this.commentMapper = commentMapper;
     }
 
     @PostMapping()
@@ -209,14 +215,13 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
-    //Get les personnes qui ont likés un post    
     /**
      * @apiNote SELECT * FROM user  WHERE id = ( SELECT user_id FROM user_like WHERE post_id = id du post )
-     * @param postId
+     * @param postId : Id of the user
      * @return Users who liked the post
      */
     @GetMapping("/{postId}/userLiked")
-    public ResponseEntity<?> usersLiked(@PathVariable Long postId){
+    public ResponseEntity<?> getUsersLiked(@PathVariable Long postId){
         var post = postService.getById(postId);
         if(post.isEmpty()){
             return new ResponseEntity<>(" Post not found", HttpStatus.NOT_FOUND);
@@ -237,7 +242,7 @@ public class PostController {
      * @return Posts that the user liked
      */
     @GetMapping("/userId/{userId}/postLiked")
-    public ResponseEntity<?> postLiked(@PathVariable Long userId){
+    public ResponseEntity<?> getPostLiked(@PathVariable Long userId){
         var user = userService.getById(userId);
         if(user.isEmpty()){
             return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
@@ -253,15 +258,67 @@ public class PostController {
         return new ResponseEntity<>(postLiked, HttpStatus.FOUND);
     }
 
+    @DeleteMapping("{postId}")
+    public ResponseEntity<?> delete (@PathVariable Long postId){
+        var post = postService.getById(postId);
+        if(post.isEmpty()){
+            return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+        }
+        postService.delete(post.get());
+
+        return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
+    }
 
 
 
 
+    // commenter un post | les commentaire sont des posts (quand même créer une entity comment)
+
+    /**
+     * @apiNote Côté front, appeler la route de création de post PUIS la route comment
+     *          Pour commenter un commentaires -> inverser les id dans le commentRequest
+     * @param commentRequest : Object with Id of the post question and Id of the answer post
+     */
+    @PostMapping("/answer")
+    public ResponseEntity<?> comment(@RequestBody @NotNull CommentRequest commentRequest){
+        var user = userService.getById(commentRequest.getUserId());
+        if(user.isEmpty()) return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+
+        var post = postService.getById(commentRequest.getPostId());
+        if(post.isEmpty())  return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+
+        var answer = postService.getById(commentRequest.getAnswerId());
+        if(answer.isEmpty()) return new ResponseEntity<>("Answer post not found", HttpStatus.NOT_FOUND);
+
+
+        var comment = commentService.create(post.get(), answer.get(), user.get());
+
+        return new ResponseEntity<>(commentMapper.entityToResponse(comment), HttpStatus.ACCEPTED);
+    }
+
+
+
+    //Get toutes les réponses d'un post
+    /** SELECT * FROM post WHERE post_id = (SELECT answerId FROM comment WHERE post_id = id du post) */
+
+
+    // Get toutes les réponses d'un user
+    /**           SELECT * FROM post WHERE postId = (SELECT answerId FROM comment)
+     *            les posts qui sont des réponses    les id des posts qui sont des réponses
+     *
+     *
+     *
+     *      select a.post_id
+     *      from post a, comment b
+     *      where a.user_id = b.user_id;
+     *
+     *
+     * */
 
     // get les Posts des followers
-    // commenter un post | les commentaire sont des posts (quand même créer une entity comment)
-    
-    //Supprimer un post
+
+
+
 
 
     //TODO : Mettre dans une classe PostMapper
@@ -273,8 +330,6 @@ public class PostController {
                 .setUpdateDate(postEntity.getCreationDate())
                 .setUser(postEntity.getUser());
     }
-
-
 
 
 }
