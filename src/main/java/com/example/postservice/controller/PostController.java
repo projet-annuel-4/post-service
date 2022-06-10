@@ -308,7 +308,19 @@ public class PostController {
     }
 
 
-    //Get les Posts des followers
+    /**
+     * @param userId : Id of the user who want to see the posts of his subscriptions
+     * @return The posts of the user's subscriptions
+     */
+    @GetMapping("/subscriptions/userId/{userId}")
+    public ResponseEntity<?> getAllSubscriptionsPost(@PathVariable Long userId){
+
+        var user = userService.getById(userId);
+        if(user.isEmpty()) return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+
+        var subscriptionsPost = postService.getAllSubscriptionPostByIdUser(userId);
+        return new ResponseEntity<>(subscriptionsPost, HttpStatus.FOUND);
+    }
 
 
 

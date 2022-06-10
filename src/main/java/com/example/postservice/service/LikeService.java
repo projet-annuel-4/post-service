@@ -39,12 +39,10 @@ public class LikeService {
         postService.update(post.getId(), postMapper.entityToRequest(post));
     }
 
-    //TODO : A tester
     public Optional<List<LikeEntity>> getAllByPostId(Long postId){
         return likeRepository.findLikeEntitiesByPostId(postId);
     }
 
-    //TODO : A tester
     public Optional<List<LikeEntity>> getAllByUserId(Long postId){
         return likeRepository.findLikeEntitiesByUserId(postId);
     }

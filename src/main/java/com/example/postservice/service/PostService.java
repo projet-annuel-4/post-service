@@ -1,9 +1,6 @@
 package com.example.postservice.service;
 
-import com.example.postservice.data.entities.LikeEntity;
-import com.example.postservice.data.entities.PostEntity;
-import com.example.postservice.data.entities.TagEntity;
-import com.example.postservice.data.entities.UserEntity;
+import com.example.postservice.data.entities.*;
 import com.example.postservice.data.repository.*;
 import com.example.postservice.data.request.PostRequest;
 import org.springframework.stereotype.Service;
@@ -17,20 +14,24 @@ import java.util.Optional;
 @Service
 public class PostService {
 
+    //TODO : Refacto -> appeler les Service à la place des Repository
+
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final AttachmentRepository attachmentRepository;
     private final TagRepository tagRepository;
     private final CommentRepository commentRepository;
+    private final FollowerService followerService;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository, CommentRepository commentRepository) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository, CommentRepository commentRepository, FollowerService followerService) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
         this.attachmentRepository = attachmentRepository;
         this.tagRepository = tagRepository;
         this.commentRepository = commentRepository;
+        this.followerService = followerService;
     }
 
 
@@ -68,7 +69,6 @@ public class PostService {
     }
 
     public PostEntity update(Long postId, PostRequest postRequest){
-
         var post = postRepository.getById(postId)
                 .setContent(postRequest.getContent())
                 .setNbLike(likeRepository.countLikeEntitiesByPostId(postId))
@@ -77,7 +77,6 @@ public class PostService {
     }
 
     public ArrayList<Optional<UserEntity>> getUserLiked(List<LikeEntity> likeEntityList){
-
         var usersLiked = new ArrayList<Optional<UserEntity>>();
 
         likeEntityList.forEach(likeEntity -> {
@@ -88,7 +87,6 @@ public class PostService {
     }
 
     public ArrayList<Optional<PostEntity>> getPostLiked(List<LikeEntity> likeEntityList){
-
         var postsLiked = new ArrayList<Optional<PostEntity>>();
 
         likeEntityList.forEach(likeEntity -> {
@@ -107,6 +105,15 @@ public class PostService {
         });
 
         return answers;
+    }
+
+    public List<PostEntity> getAllSubscriptionPostByIdUser(Long userId){
+        var subscriptionsLink = followerService.getSubscriptionsByUserId(userId);
+
+        var posts = new ArrayList<PostEntity>();
+        subscriptionsLink.forEach(subscription -> posts.addAll(postRepository.getAllByUser(subscription.getUser())));
+
+        return posts;
     }
 
     @Transactional
