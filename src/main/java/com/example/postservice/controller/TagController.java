@@ -28,10 +28,10 @@ public class TagController {
     }
 
 
-/*
+
     @GetMapping("/name/{tagName}")
     public ResponseEntity<List<TagResponse>> getAllByName(@PathVariable String tagName){
-        var tags = tagService.getAllTagByName(tagName)
+        var tags = tagService.getAllTagByName(tagName).get()
                 .stream()
                 .map(this::entityToResponse)
                 .collect(toList());
@@ -39,14 +39,14 @@ public class TagController {
         return new ResponseEntity<>(tags, HttpStatus.FOUND);
     }
 
- */
+
 
 
 
     private TagResponse entityToResponse(TagEntity tagEntity){
         return new TagResponse()
                 .setName(tagEntity.getName())
-                .setPostId(tagEntity.getId());
+                .setPostId(tagEntity.getPost().getId());
     }
 
 

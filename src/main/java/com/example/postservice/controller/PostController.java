@@ -308,11 +308,15 @@ public class PostController {
     }
 
 
-    //Get toutes les réponses d'un user (en option)
     //Get les Posts des followers
 
 
 
+
+
+
+
+    //Get toutes les réponses d'un user (en option)
 
 
     //TODO : Mettre dans une classe PostMapper
