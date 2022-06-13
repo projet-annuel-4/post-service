@@ -50,6 +50,9 @@ public class PostController {
         // - Possible d'avoir un post sans content (donc juste une image) ??
         // -    Sinon : Vérifier que le content n'est pas vide (avec annotation spring)
 
+
+        //TODO : ajouter une limite de 5 tag par post
+
         var user = userService.getById(postRequest.getUserId());
         if(user.isEmpty()){
             return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
@@ -164,6 +167,10 @@ public class PostController {
 
         return new ResponseEntity<>(posts, HttpStatus.FOUND);
     }
+
+
+    //TODO : Get All Post By TagList
+
 
 
     /**
@@ -315,6 +322,9 @@ public class PostController {
     @GetMapping("/subscriptions/userId/{userId}")
     public ResponseEntity<?> getAllSubscriptionsPost(@PathVariable Long userId){
 
+        //TODO : Faire l'appel au micro-service de groupe pour avoir les followers
+        //          voir exemple -> https://github.dev/only2dhir/spring-cloud-feign-example
+
         var user = userService.getById(userId);
         if(user.isEmpty()) return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
 
@@ -322,11 +332,43 @@ public class PostController {
         return new ResponseEntity<>(subscriptionsPost, HttpStatus.FOUND);
     }
 
+/*
+    CodeEntity :
+    id
+    language
+    content
+    runnable -- pour savor si le code est executable ou pas
+    post_id
+*/
+
+    //TODO : Gestion du code dans les posts
+
+    /*
+    Je suis le blabla
+    #JS#
+    function test(a:number){
+        return a + 1;
+    }
+    ##
+    Blablalbba
+    #JS#
+    function testBis(a:number){
+        return a + 1;
+    }
 
 
+Avant d'enregister le post
+    Dans le content : recuperer le code entre les balises -> https://waytolearnx.com/2020/05/extraire-une-chaine-entre-deux-balises-en-java.html
+            regex
+        - créer l'entitiy Code
+            codeRepostitory.create(language, code, runnable)
+        - Recupérer l'id de l'object Code créé
+
+    Dans le content remplacer le texte du code entre les balises part l'id de l'entityCode
+Enregistrer le post
 
 
-
+*/
 
     //Get toutes les réponses d'un user (en option)
 
