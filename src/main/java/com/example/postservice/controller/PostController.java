@@ -46,17 +46,29 @@ public class PostController {
 
     @PostMapping()
     public ResponseEntity<?> create(@RequestBody PostRequest postRequest){
-        //TODO :
-        // - Possible d'avoir un post sans content (donc juste une image) ??
-        // -    Sinon : Vérifier que le content n'est pas vide (avec annotation spring)
-
 
         //TODO : ajouter une limite de 5 tag par post
+
+
+
+    /*
+
+Avant d'enregister le post
+    Dans le content : recuperer le code entre les balises -> https://waytolearnx.com/2020/05/extraire-une-chaine-entre-deux-balises-en-java.html
+            regex
+        - créer l'entitiy Code
+            codeRepostitory.create(language, code, runnable)
+        - Recupérer l'id de l'object Code créé
+
+    Dans le content remplacer le texte du code entre les balises part l'id de l'entityCode
+Enregistrer le post
+*/
 
         var user = userService.getById(postRequest.getUserId());
         if(user.isEmpty()){
             return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
         }
+
 
         var post = postService.create(postRequest, user.get());
 
@@ -336,34 +348,7 @@ public class PostController {
     }
 
 
-    //TODO : Gestion du code dans les posts
 
-    /*
-    Je suis le blabla
-    #JS#
-    function test(a:number){
-        return a + 1;
-    }
-    ##
-    Blablalbba
-    #JS#
-    function testBis(a:number){
-        return a + 1;
-    }
-
-
-Avant d'enregister le post
-    Dans le content : recuperer le code entre les balises -> https://waytolearnx.com/2020/05/extraire-une-chaine-entre-deux-balises-en-java.html
-            regex
-        - créer l'entitiy Code
-            codeRepostitory.create(language, code, runnable)
-        - Recupérer l'id de l'object Code créé
-
-    Dans le content remplacer le texte du code entre les balises part l'id de l'entityCode
-Enregistrer le post
-
-
-*/
 
     //Get toutes les réponses d'un user (en option)
 

@@ -11,7 +11,7 @@ public class CodeEntity {
     private Long id;
 
     private String language;
-    private String content;
+    private String code;
     private Boolean runnable; /* pour savor si le code est executable ou pas */
     @ManyToOne()
     private PostEntity post;
@@ -35,12 +35,12 @@ public class CodeEntity {
         return this;
     }
 
-    public String getContent() {
-        return content;
+    public String getCode() {
+        return code;
     }
 
-    public CodeEntity setContent(String content) {
-        this.content = content;
+    public CodeEntity setCode(String code) {
+        this.code = code;
         return this;
     }
 

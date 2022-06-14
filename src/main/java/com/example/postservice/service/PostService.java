@@ -7,15 +7,11 @@ import com.example.postservice.domain.Extractor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class PostService {
-
-    //TODO : Refacto -> appeler les Service à la place des Repository
 
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
@@ -24,9 +20,9 @@ public class PostService {
     private final TagRepository tagRepository;
     private final CommentRepository commentRepository;
     private final FollowerService followerService;
-    private final Extractor extractor;
+    private final CodeService codeService;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository, CommentRepository commentRepository, FollowerService followerService, Extractor extractor) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository, CommentRepository commentRepository, FollowerService followerService, CodeService codeService) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
@@ -34,11 +30,13 @@ public class PostService {
         this.tagRepository = tagRepository;
         this.commentRepository = commentRepository;
         this.followerService = followerService;
-        this.extractor = extractor;
+        this.codeService = codeService;
     }
 
 
     public PostEntity create(PostRequest postRequest, UserEntity user){
+
+        //Premier enregistrement pour avoir l'id du post
         var post = new PostEntity()
                 .setContent(postRequest.getContent())
                 .setNbLike(0)
@@ -46,6 +44,29 @@ public class PostService {
                 .setUpdateDate(null)
                 .setUser(user);
         postRepository.save(post);
+
+        String content = postRequest.getContent();
+
+        if(!Objects.equals(postRequest.getContent(), "")) {
+            var codeMap = codeService.create(postRequest.getContent(), post);
+
+            AtomicReference<String> updateContent = new AtomicReference<>("");
+            codeMap.forEach((language, code) -> {
+                updateContent.set(updateContent + code.getCode());
+            });
+
+            content = updateContent.get();
+        }
+
+        var postToUpdate = postRepository.findById(post.getId());
+        postToUpdate.get()
+                .setContent(content)
+                .setNbLike(0)
+                .setCreationDate(new Date())
+                .setUpdateDate(null)
+                .setUser(user);
+        postRepository.save(post);
+
         return post;
     }
 
