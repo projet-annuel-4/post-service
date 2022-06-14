@@ -3,6 +3,7 @@ package com.example.postservice.service;
 import com.example.postservice.data.entities.*;
 import com.example.postservice.data.repository.*;
 import com.example.postservice.data.request.PostRequest;
+import com.example.postservice.domain.Extractor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +24,9 @@ public class PostService {
     private final TagRepository tagRepository;
     private final CommentRepository commentRepository;
     private final FollowerService followerService;
+    private final Extractor extractor;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository, CommentRepository commentRepository, FollowerService followerService) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository, CommentRepository commentRepository, FollowerService followerService, Extractor extractor) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
@@ -32,6 +34,7 @@ public class PostService {
         this.tagRepository = tagRepository;
         this.commentRepository = commentRepository;
         this.followerService = followerService;
+        this.extractor = extractor;
     }
 
 

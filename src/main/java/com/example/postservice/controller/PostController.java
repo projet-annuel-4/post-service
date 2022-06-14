@@ -60,6 +60,8 @@ public class PostController {
 
         var post = postService.create(postRequest, user.get());
 
+        //TODO : Mettre la logique métier dans le create() du service de post
+
         if(!Objects.equals(postRequest.getTagName(), "")) {
             var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.getId());
             tagService.create(tagRequest, post);
@@ -73,6 +75,7 @@ public class PostController {
             );
             attachmentService.create(attachmentRequest, post);
         }
+        //
 
         return new ResponseEntity<>(toResponse(post), HttpStatus.CREATED);
     }
@@ -332,14 +335,6 @@ public class PostController {
         return new ResponseEntity<>(subscriptionsPost, HttpStatus.FOUND);
     }
 
-/*
-    CodeEntity :
-    id
-    language
-    content
-    runnable -- pour savor si le code est executable ou pas
-    post_id
-*/
 
     //TODO : Gestion du code dans les posts
 
