@@ -22,6 +22,10 @@ import static java.util.stream.Collectors.toList;
 @RequestMapping("/api/v1/post")
 public class PostController {
 
+    private static final String USER_NOT_FOUND = "User not found";
+    private static final String POST_NOT_FOUND = "Post not found";
+    
+
     private final PostService postService;
     private final UserService userService;
     private final TagMapper tagMapper;
@@ -66,7 +70,7 @@ Enregistrer le post
 
         var user = userService.getById(postRequest.getUserId());
         if(user.isEmpty()){
-            return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
 
@@ -74,6 +78,7 @@ Enregistrer le post
 
         //TODO : Mettre la logique métier dans le create() du service de post
 
+        //TODO : utiliser isBlank() à la place des equals()
         if(!Objects.equals(postRequest.getTagName(), "")) {
             var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.getId());
             tagService.create(tagRequest, post);
@@ -88,7 +93,6 @@ Enregistrer le post
             attachmentService.create(attachmentRequest, post);
         }
         //
-
         return new ResponseEntity<>(toResponse(post), HttpStatus.CREATED);
     }
 
@@ -98,7 +102,7 @@ Enregistrer le post
 
         var post = postService.getById(postId);
         if(post.isEmpty()){
-            return new ResponseEntity<>(" Post not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         if(!Objects.equals(postRequest.getTagName(), "")) {
@@ -135,7 +139,7 @@ Enregistrer le post
     public ResponseEntity<?> getById(@PathVariable @NotNull Long postId){
         var post = postService.getById(postId);
         if(post.isEmpty()){
-            return new ResponseEntity<>(" Post not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(toResponse(post.get()), HttpStatus.FOUND);
@@ -146,7 +150,7 @@ Enregistrer le post
         var user = userService.getById(userId);
 
         if(user.isEmpty()){
-            return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
          var posts = postService.getAllByUser(user.get())
@@ -172,7 +176,7 @@ Enregistrer le post
     public ResponseEntity<?> getAllByTag(@PathVariable String tagName){
         var tags = tagService.getAllTagByName(tagName);
         if(tags.isEmpty()){
-            return new ResponseEntity<>(" Tag not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Tag not found", HttpStatus.NOT_FOUND);
         }
 
         var posts = postService.getAllByTag(tags.get());
@@ -189,7 +193,6 @@ Enregistrer le post
 
 
     /**
-     *
      * @param postId : Id of the post
      * @param userId : Id of the user who likes
      */
@@ -197,12 +200,12 @@ Enregistrer le post
     public ResponseEntity<?> likePost(@PathVariable Long postId, @PathVariable Long userId){
         var post = postService.getById(postId);
         if(post.isEmpty()){
-            return new ResponseEntity<>(" Post not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         var user = userService.getById(userId);
         if(user.isEmpty()){
-            return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         var alreadyLiked = likeService.getByPostAndUser(post.get(), user.get());
@@ -216,7 +219,6 @@ Enregistrer le post
     }
 
     /**
-     *
      * @param postId :Id of the post
      * @param userId : Id of the user who likes
      */
@@ -224,12 +226,12 @@ Enregistrer le post
     public ResponseEntity<?> dislike(@PathVariable Long postId, @PathVariable Long userId){
         var post = postService.getById(postId);
         if(post.isEmpty()){
-            return new ResponseEntity<>(" Post not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         var user = userService.getById(userId);
         if(user.isEmpty()){
-            return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         likeService.dislike(post.get(), user.get());
@@ -246,7 +248,7 @@ Enregistrer le post
     public ResponseEntity<?> getUsersLiked(@PathVariable Long postId){
         var post = postService.getById(postId);
         if(post.isEmpty()){
-            return new ResponseEntity<>(" Post not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         var postLikeList = likeService.getAllByPostId(postId);
@@ -267,7 +269,7 @@ Enregistrer le post
     public ResponseEntity<?> getPostLiked(@PathVariable Long userId){
         var user = userService.getById(userId);
         if(user.isEmpty()){
-            return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         var likeList = likeService.getAllByUserId(userId);
@@ -284,7 +286,7 @@ Enregistrer le post
     public ResponseEntity<?> delete (@PathVariable Long postId){
         var post = postService.getById(postId);
         if(post.isEmpty()){
-            return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         postService.delete(post.get());
 
@@ -299,10 +301,10 @@ Enregistrer le post
     @PostMapping("/answer")
     public ResponseEntity<?> comment(@RequestBody @NotNull CommentRequest commentRequest){
         var user = userService.getById(commentRequest.getUserId());
-        if(user.isEmpty()) return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+        if(user.isEmpty()) return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         var post = postService.getById(commentRequest.getPostId());
-        if(post.isEmpty())  return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+        if(post.isEmpty())  return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         var answer = postService.getById(commentRequest.getAnswerId());
         if(answer.isEmpty()) return new ResponseEntity<>("Answer post not found", HttpStatus.NOT_FOUND);
@@ -322,7 +324,7 @@ Enregistrer le post
     @GetMapping("{postId}/answers")
     public ResponseEntity<?> getAllPostAnswers(@PathVariable Long postId){
         var post = postService.getById(postId);
-        if(post.isEmpty())  return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+        if(post.isEmpty())  return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         var answers = postService.getAllPostAnswersById(postId);
 
@@ -341,7 +343,7 @@ Enregistrer le post
         //          voir exemple -> https://github.dev/only2dhir/spring-cloud-feign-example
 
         var user = userService.getById(userId);
-        if(user.isEmpty()) return new ResponseEntity<>(" User not found", HttpStatus.NOT_FOUND);
+        if(user.isEmpty()) return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         var subscriptionsPost = postService.getAllSubscriptionPostByIdUser(userId);
         return new ResponseEntity<>(subscriptionsPost, HttpStatus.FOUND);

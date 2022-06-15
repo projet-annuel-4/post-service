@@ -47,6 +47,7 @@ public class PostService {
 
         String content = postRequest.getContent();
 
+        //TODO : utiliser isBlank() à la place de equals
         if(!Objects.equals(postRequest.getContent(), "")) {
             var codeMap = codeService.create(postRequest.getContent(), post);
 

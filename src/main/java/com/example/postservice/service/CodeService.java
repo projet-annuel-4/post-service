@@ -34,7 +34,7 @@ public class CodeService {
 
         //Splitter les codes s'il y en a plusieurs
         ArrayList<String> codeSections = extractor.getCodeSectionFromContent(content);
-        if(codeSections.size() > 0) {
+        if(!codeSections.isEmpty()) {
             //Pour chaque code,  enregistrer l'entité en base
             codeSections.forEach(codeSection -> {
                 String language;
@@ -45,7 +45,6 @@ public class CodeService {
 
                     //Suppression du langage pour l'enregistrement en base
                     code = codeSection.replaceAll("`" + language + "`", "");
-
                     var codeCreate = codeRepository.save(codeMapper.toEntity(language, code, post));
 
                     list.put(language, codeCreate);
