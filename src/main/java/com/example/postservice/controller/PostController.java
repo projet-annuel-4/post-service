@@ -3,6 +3,7 @@ package com.example.postservice.controller;
 
 import com.example.postservice.data.entities.PostEntity;
 import com.example.postservice.data.request.CommentRequest;
+import com.example.postservice.data.request.PostFilterRequest;
 import com.example.postservice.data.request.PostRequest;
 import com.example.postservice.data.response.PostResponse;
 import com.example.postservice.domain.mapper.AttachmentMapper;
@@ -49,25 +50,33 @@ public class PostController {
         this.commentMapper = commentMapper;
     }
 
+    /**
+     * Gestion du code dans les posts :
+         * Avant d'enregister le post
+         *     Dans le content : recuperer le code entre les balises -> https://waytolearnx.com/2020/05/extraire-une-chaine-entre-deux-balises-en-java.html
+         *             regex
+         *         - créer l'entitiy Code
+         *             codeRepostitory.create(language, code, runnable)
+         *         - Recupérer l'id de l'object Code créé
+         *
+         *     Dans le content remplacer le texte du code entre les balises part l'id de l'entityCode
+         * Enregistrer le post
+     *
+     * @param postRequest : PostRequest(
+     *                                  String content;
+     *                                  Integer nbLike;
+     *                                  LocalDateTime creationDate;
+     *                                  LocalDateTime updateDate;
+     *                                  Long userId;
+     *                                  String tagName;
+     *                                  String attachmentUrl;
+     *                                  String attachmentDescription;
+     * @return : The post created
+     */
     @PostMapping()
     public ResponseEntity<?> create(@RequestBody PostRequest postRequest){
 
         //TODO : ajouter une limite de 5 tag par post
-
-
-
-    /*
-
-Avant d'enregister le post
-    Dans le content : recuperer le code entre les balises -> https://waytolearnx.com/2020/05/extraire-une-chaine-entre-deux-balises-en-java.html
-            regex
-        - créer l'entitiy Code
-            codeRepostitory.create(language, code, runnable)
-        - Recupérer l'id de l'object Code créé
-
-    Dans le content remplacer le texte du code entre les balises part l'id de l'entityCode
-Enregistrer le post
-*/
 
         var user = userService.getById(postRequest.getUserId());
         if(user.isEmpty()){
@@ -196,7 +205,25 @@ Enregistrer le post
 
     //TODO : Get All Post By TagList
 
-    //TODO : Recherche avec plusierus critères
+    /**
+     * @apiNote BAD_REQUEST If the user only puts the tagName in the filter
+     *                                          (there is a endpoint made for the getAllByTagName)
+     * @param filters : PostFilterRequest(content, tagName, creationDate)
+     * @return Posts whose match with the filter
+     */
+    @GetMapping("/filters")
+    public ResponseEntity<List<PostResponse>> getPostsWithFilter(@RequestBody PostFilterRequest filters){
+
+        if(filters.getContent().isBlank() && filters.getCreationDate().isBlank() && !filters.getTagName().isBlank()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        var postsResponses = postService.getAllWithFilter(filters)
+                                                            .stream()
+                                                            .map(this::toResponse)
+                                                            .collect(toList());
+        return new ResponseEntity<>(postsResponses, HttpStatus.FOUND);
+    }
 
 
 
@@ -356,9 +383,7 @@ Enregistrer le post
         var subscriptionsPost = postService.getAllSubscriptionPostByIdUser(userId);
         return new ResponseEntity<>(subscriptionsPost, HttpStatus.FOUND);
     }
-
-
-
+    
 
     //Get toutes les réponses d'un user (en option)
 

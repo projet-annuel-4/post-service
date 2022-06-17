@@ -2,7 +2,6 @@ package com.example.postservice.data.request;
 
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class PostRequest {
 

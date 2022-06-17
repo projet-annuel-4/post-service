@@ -2,8 +2,9 @@ package com.example.postservice.service;
 
 import com.example.postservice.data.entities.*;
 import com.example.postservice.data.repository.*;
+import com.example.postservice.data.request.PostFilterRequest;
 import com.example.postservice.data.request.PostRequest;
-import com.example.postservice.domain.Extractor;
+import com.example.postservice.util.DateTimeUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +57,9 @@ public class PostService {
                 updateContent.set(updateContent + code.getCode());
             });
 
-            content = updateContent.get();
+            if(!updateContent.get().isBlank()) {
+                content = updateContent.get();
+            }
         }
 
         var postToUpdate = postRepository.findById(post.getId());
@@ -140,6 +143,39 @@ public class PostService {
 
         return posts;
     }
+
+    public List<PostEntity> getAllWithFilter(PostFilterRequest filters){
+
+        var postsWithFilter = new ArrayList<PostEntity>();
+
+        var dateForQuery = LocalDateTime.now();
+
+        if (!filters.getCreationDate().isEmpty() && filters.getCreationDate() != null) {
+            if(DateTimeUtil.isValid(filters.getCreationDate())){
+                dateForQuery = DateTimeUtil.dateFromString(filters.getCreationDate());
+            }
+        } else {
+            dateForQuery = DateTimeUtil.dateFromString("1900-01-01 00:00:00");
+        }
+
+        if(!filters.getTagName().isEmpty()){
+            var tags = tagRepository.findTagEntitiesByName(filters.getTagName());
+            if(tags.isPresent()){
+                var postsByTag = getAllByTag(tags.get());
+                postsByTag.forEach(postEntity -> {
+                    if(postEntity.isPresent()) {
+                        postsWithFilter.add(postEntity.get());
+                    }
+                });
+            }
+        }
+
+        postsWithFilter.addAll(postRepository.findAllByContentOrUpdateDate(filters.getContent(), dateForQuery));
+
+        return postsWithFilter;
+    }
+
+
 
     @Transactional
     public void delete(PostEntity post){
