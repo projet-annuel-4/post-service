@@ -7,6 +7,7 @@ import com.example.postservice.domain.Extractor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -40,15 +41,14 @@ public class PostService {
         var post = new PostEntity()
                 .setContent(postRequest.getContent())
                 .setNbLike(0)
-                .setCreationDate(new Date())
+                .setCreationDate(LocalDateTime.now())
                 .setUpdateDate(null)
                 .setUser(user);
         postRepository.save(post);
 
         String content = postRequest.getContent();
 
-        //TODO : utiliser isBlank() à la place de equals
-        if(!Objects.equals(postRequest.getContent(), "")) {
+        if(!postRequest.getContent().isBlank()) {
             var codeMap = codeService.create(postRequest.getContent(), post);
 
             AtomicReference<String> updateContent = new AtomicReference<>("");
@@ -63,7 +63,7 @@ public class PostService {
         postToUpdate.get()
                 .setContent(content)
                 .setNbLike(0)
-                .setCreationDate(new Date())
+                .setCreationDate(LocalDateTime.now())
                 .setUpdateDate(null)
                 .setUser(user);
         postRepository.save(post);
@@ -97,7 +97,7 @@ public class PostService {
         var post = postRepository.getById(postId)
                 .setContent(postRequest.getContent())
                 .setNbLike(likeRepository.countLikeEntitiesByPostId(postId))
-                .setUpdateDate(new Date());
+                .setUpdateDate(LocalDateTime.now());
         return postRepository.save(post);
     }
 

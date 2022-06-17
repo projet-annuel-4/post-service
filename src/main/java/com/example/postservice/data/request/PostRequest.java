@@ -1,14 +1,15 @@
 package com.example.postservice.data.request;
 
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class PostRequest {
 
     private String content;
     private Integer nbLike;
-    private Date creationDate;
-    private Date updateDate;
+    private LocalDateTime creationDate;
+    private LocalDateTime updateDate;
     private Long userId;
     private String tagName;
     private String attachmentUrl;
@@ -32,20 +33,20 @@ public class PostRequest {
         return this;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public PostRequest setCreationDate(Date creationDate) {
+    public PostRequest setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
         return this;
     }
 
-    public Date getUpdateDate() {
+    public LocalDateTime getUpdateDate() {
         return updateDate;
     }
 
-    public PostRequest setUpdateDate(Date updateDate) {
+    public PostRequest setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
         return this;
     }

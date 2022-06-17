@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
@@ -78,13 +79,12 @@ Enregistrer le post
 
         //TODO : Mettre la logique métier dans le create() du service de post
 
-        //TODO : utiliser isBlank() à la place des equals()
-        if(!Objects.equals(postRequest.getTagName(), "")) {
+        if(!postRequest.getTagName().isBlank()) {
             var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.getId());
             tagService.create(tagRequest, post);
         }
 
-        if(!Objects.equals(postRequest.getAttachmentUrl(), "") && !Objects.equals(postRequest.getAttachmentDescription(), "")){
+        if(!postRequest.getAttachmentUrl().isBlank() && !postRequest.getAttachmentDescription().isBlank()){
             var attachmentRequest = attachmentMapper.toRequest(
                     postRequest.getAttachmentUrl(),
                     postRequest.getAttachmentDescription(),
@@ -98,14 +98,12 @@ Enregistrer le post
 
     @PutMapping("/{postId}")
     public ResponseEntity<?> update(@PathVariable Long postId, @RequestBody PostRequest postRequest){
-        //TODO : Mettre à jour le format des dates dans les entities
-
         var post = postService.getById(postId);
         if(post.isEmpty()){
             return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        if(!Objects.equals(postRequest.getTagName(), "")) {
+        if(!postRequest.getTagName().isBlank()) {
             var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.get().getId());
 
             var tagExist = tagService.getByNameAndPostId(postRequest.getTagName(), postId);
@@ -116,7 +114,7 @@ Enregistrer le post
             }
         }
 
-        if(!Objects.equals(postRequest.getAttachmentUrl(), "") && !Objects.equals(postRequest.getAttachmentDescription(), "")){
+        if(!postRequest.getAttachmentUrl().isBlank() && !postRequest.getAttachmentDescription().isBlank()){
             var attachmentRequest = attachmentMapper.toRequest(
                     postRequest.getAttachmentUrl(),
                     postRequest.getAttachmentDescription(),
@@ -130,9 +128,9 @@ Enregistrer le post
             }
         }
 
-        postService.update(postId, postRequest);
+        var postUpdated = postService.update(postId, postRequest);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(toResponse(postUpdated), HttpStatus.OK);
     }
 
     @GetMapping("/{postId}")
@@ -145,6 +143,10 @@ Enregistrer le post
         return new ResponseEntity<>(toResponse(post.get()), HttpStatus.FOUND);
     }
 
+    /**
+     * @param userId : Id of the user
+     * @return All user posts
+     */
     @GetMapping("/userId/{userId}")
     public ResponseEntity<?> getAllByUser(@PathVariable @NotNull Long userId){
         var user = userService.getById(userId);
@@ -161,8 +163,12 @@ Enregistrer le post
         return new ResponseEntity<>(posts, HttpStatus.FOUND);
     }
 
+
+    /**
+     * @return All the posts in the BDD
+     */
     @GetMapping()
-    public ResponseEntity<?> getAll(){
+    public ResponseEntity<List<PostResponse>> getAll(){
         var posts = postService.getAll()
                 .stream()
                 .map(this::toResponse)
@@ -189,6 +195,8 @@ Enregistrer le post
 
 
     //TODO : Get All Post By TagList
+
+    //TODO : Recherche avec plusierus critères
 
 
 
@@ -361,7 +369,7 @@ Enregistrer le post
                 .setContent(postEntity.getContent())
                 .setNbLike(postEntity.getNbLike())
                 .setCreationDate(postEntity.getCreationDate())
-                .setUpdateDate(postEntity.getCreationDate())
+                .setUpdateDate(postEntity.getUpdateDate())
                 .setUser(postEntity.getUser());
     }
 

@@ -1,6 +1,7 @@
 package com.example.postservice.data.entities;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -12,10 +13,8 @@ public class PostEntity {
     private Long id;
     private String content;
     private Integer nbLike;
-    @Temporal(TemporalType.DATE)
-    private Date creationDate;
-    @Temporal(TemporalType.DATE)
-    private Date updateDate;
+    private LocalDateTime creationDate;
+    private LocalDateTime updateDate;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -49,20 +48,20 @@ public class PostEntity {
         return this;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public PostEntity setCreationDate(Date creationDate) {
+    public PostEntity setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
         return this;
     }
 
-    public Date getUpdateDate() {
+    public LocalDateTime getUpdateDate() {
         return updateDate;
     }
 
-    public PostEntity setUpdateDate(Date updateDate) {
+    public PostEntity setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
         return this;
     }

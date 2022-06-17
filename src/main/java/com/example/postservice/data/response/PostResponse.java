@@ -2,14 +2,15 @@ package com.example.postservice.data.response;
 
 import com.example.postservice.data.entities.UserEntity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class PostResponse {
 
     private String content;
     private Integer nbLike;
-    private Date creationDate;
-    private Date updateDate;
+    private LocalDateTime creationDate;
+    private LocalDateTime updateDate;
     private UserEntity user;
 
     public String getContent() {
@@ -30,20 +31,20 @@ public class PostResponse {
         return this;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public PostResponse setCreationDate(Date creationDate) {
+    public PostResponse setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
         return this;
     }
 
-    public Date getUpdateDate() {
+    public LocalDateTime getUpdateDate() {
         return updateDate;
     }
 
-    public PostResponse setUpdateDate(Date updateDate) {
+    public PostResponse setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
         return this;
     }
