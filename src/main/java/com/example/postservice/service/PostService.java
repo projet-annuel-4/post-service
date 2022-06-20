@@ -95,6 +95,13 @@ public class PostService {
 
         return posts;
     }
+    public List<PostEntity> getAllByTags(List<TagEntity> tagEntityList){
+        var posts = new ArrayList<PostEntity>();
+        tagEntityList.forEach(tagEntity -> {
+            posts.add(postRepository.findById(tagEntity.getPost().getId()).get());
+        });
+        return posts;
+    }
 
     public PostEntity update(Long postId, PostRequest postRequest){
         var post = postRepository.getById(postId)

@@ -6,6 +6,7 @@ import com.example.postservice.data.repository.TagRepository;
 import com.example.postservice.data.request.TagRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public class TagService {
         return tagRepository.findById(tagId);
     }
 
-    public TagEntity getByName(String tagName){
+    public List<TagEntity> getByName(String tagName){
         return tagRepository.findByName(tagName);
     }
 
@@ -47,5 +48,14 @@ public class TagService {
 
     public Optional<List<TagEntity>> getAllTagByName(String tagName){
         return tagRepository.findTagEntitiesByName(tagName);
+    }
+
+    public List<TagEntity> getAllByTagNameList(List<String> tagNameList){
+        var tagEntityList = new ArrayList<TagEntity>();
+        tagNameList.forEach(tagName -> {
+            var tags = getByName(tagName);
+            tagEntityList.addAll(tags);
+        });
+        return tagEntityList;
     }
 }

@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
@@ -201,9 +200,27 @@ public class PostController {
 
         return new ResponseEntity<>(posts, HttpStatus.FOUND);
     }
+    
+    /**
+     * @param tagNameList : Tag List
+     * @return : Post By TagList
+     */
+    @GetMapping("/tagsName")
+    public ResponseEntity<?> getAllByTags(@RequestBody List<String> tagNameList){
+        var tags = tagService.getAllByTagNameList(tagNameList);
 
+        var posts = postService.getAllByTags(tags);
+        if(posts.isEmpty()){
+            return new ResponseEntity<>("No post with this tags", HttpStatus.NOT_FOUND);
+        }
 
-    //TODO : Get All Post By TagList
+        var postResponses = posts
+                .stream()
+                .map(this::toResponse)
+                .collect(toList());
+
+        return new ResponseEntity<>(postResponses, HttpStatus.FOUND);
+    }
 
     /**
      * @apiNote BAD_REQUEST If the user only puts the tagName in the filter
