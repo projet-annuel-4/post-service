@@ -7,11 +7,21 @@ import java.util.Date;
 
 public class PostResponse {
 
+    private Long id;
     private String content;
     private Integer nbLike;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
     private UserEntity user;
+
+    public Long getId() {
+        return id;
+    }
+
+    public PostResponse setId(Long id) {
+        this.id = id;
+        return this;
+    }
 
     public String getContent() {
         return content;

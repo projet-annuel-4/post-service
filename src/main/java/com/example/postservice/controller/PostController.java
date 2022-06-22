@@ -19,6 +19,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/post")
 public class PostController {
@@ -397,7 +398,10 @@ public class PostController {
         var user = userService.getById(userId);
         if(user.isEmpty()) return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
 
-        var subscriptionsPost = postService.getAllSubscriptionPostByIdUser(userId);
+        var subscriptionsPost = postService.getAllSubscriptionPostByIdUser(userId)
+                .stream()
+                .map(this::toResponse)
+                .collect(toList());
         return new ResponseEntity<>(subscriptionsPost, HttpStatus.FOUND);
     }
     
@@ -408,6 +412,7 @@ public class PostController {
     //TODO : Mettre dans une classe PostMapper
     private PostResponse toResponse(PostEntity postEntity){
         return new PostResponse()
+                .setId(postEntity.getId())
                 .setContent(postEntity.getContent())
                 .setNbLike(postEntity.getNbLike())
                 .setCreationDate(postEntity.getCreationDate())
