@@ -2,23 +2,24 @@ package com.example.postservice.data.response;
 
 import com.example.postservice.data.entities.UserEntity;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 public class PostResponse {
 
-    private Long id;
+    private String id;
     private String content;
     private Integer nbLike;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
     private UserEntity user;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public PostResponse setId(Long id) {
+    public PostResponse setId(String id) {
         this.id = id;
         return this;
     }

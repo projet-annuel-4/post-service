@@ -412,7 +412,7 @@ public class PostController {
     //TODO : Mettre dans une classe PostMapper
     private PostResponse toResponse(PostEntity postEntity){
         return new PostResponse()
-                .setId(postEntity.getId())
+                .setId(postEntity.getId().toString())
                 .setContent(postEntity.getContent())
                 .setNbLike(postEntity.getNbLike())
                 .setCreationDate(postEntity.getCreationDate())
