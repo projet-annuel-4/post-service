@@ -50,7 +50,7 @@ public class CodeService {
                     list.put(language, codeCreate);
 
                 }catch (Exception e){
-                    System.out.println(e);
+                    System.out.println("catch  :" + e);
                 }
             });
 /*

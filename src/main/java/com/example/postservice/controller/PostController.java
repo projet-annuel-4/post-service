@@ -60,7 +60,7 @@ public class PostController {
          *             codeRepostitory.create(language, code, runnable)
          *         - Recupérer l'id de l'object Code créé
          *
-         *     Dans le content remplacer le texte du code entre les balises part l'id de l'entityCode
+         *     Dans le content remplacer le texte du code entre les balises par l'id de l'entityCode
          * Enregistrer le post
      *
      * @param postRequest : PostRequest(
