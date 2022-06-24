@@ -5,21 +5,23 @@ import com.example.postservice.data.entities.UserEntity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 public class PostResponse {
 
-    private String id;
+    private Long id;
     private String content;
     private Integer nbLike;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
+    private List<TagResponse> tags;
     private UserEntity user;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public PostResponse setId(String id) {
+    public PostResponse setId(Long id) {
         this.id = id;
         return this;
     }
@@ -57,6 +59,15 @@ public class PostResponse {
 
     public PostResponse setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
+        return this;
+    }
+
+    public List<TagResponse> getTags() {
+        return tags;
+    }
+
+    public PostResponse setTags(List<TagResponse> tags) {
+        this.tags = tags;
         return this;
     }
 

@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -149,7 +150,13 @@ public class PostController {
             return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(toResponse(post.get()), HttpStatus.FOUND);
+        var postTags = tagService.getAllByPostId(postId).get()
+                .stream()
+                .map(TagMapper::toResponse)
+                .collect(Collectors.toList());
+
+
+        return new ResponseEntity<>(toResponse(post.get()).setTags(postTags), HttpStatus.FOUND);
     }
 
     /**
@@ -412,7 +419,7 @@ public class PostController {
     //TODO : Mettre dans une classe PostMapper
     private PostResponse toResponse(PostEntity postEntity){
         return new PostResponse()
-                .setId(postEntity.getId().toString())
+                .setId(postEntity.getId())
                 .setContent(postEntity.getContent())
                 .setNbLike(postEntity.getNbLike())
                 .setCreationDate(postEntity.getCreationDate())

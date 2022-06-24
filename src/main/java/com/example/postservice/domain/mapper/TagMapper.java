@@ -1,6 +1,8 @@
 package com.example.postservice.domain.mapper;
 
+import com.example.postservice.data.entities.TagEntity;
 import com.example.postservice.data.request.TagRequest;
+import com.example.postservice.data.response.TagResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,6 +13,12 @@ public class TagMapper {
         return new TagRequest()
                 .setName(tagName)
                 .setPostId(postId);
+    }
+
+    public static TagResponse toResponse(TagEntity tagEntity){
+        return new TagResponse()
+                .setName(tagEntity.getName())
+                .setPostId(tagEntity.getPost().getId());
     }
 
 

@@ -42,6 +42,9 @@ public class TagService {
         return tagRepository.findByName(tagName);
     }
 
+    public Optional<List<TagEntity>> getAllByPostId(Long postId){
+        return tagRepository.findTagEntitiesByPostId(postId);
+    }
     public TagEntity getByNameAndPostId(String tagName, Long postId){
         return tagRepository.findTagEntitiesByNameAndPostId(tagName,postId);
     }

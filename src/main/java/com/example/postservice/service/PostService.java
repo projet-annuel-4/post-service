@@ -4,6 +4,7 @@ import com.example.postservice.data.entities.*;
 import com.example.postservice.data.repository.*;
 import com.example.postservice.data.request.PostFilterRequest;
 import com.example.postservice.data.request.PostRequest;
+import com.example.postservice.domain.mapper.TagMapper;
 import com.example.postservice.util.DateTimeUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -20,16 +22,18 @@ public class PostService {
     private final UserRepository userRepository;
     private final AttachmentRepository attachmentRepository;
     private final TagRepository tagRepository;
+    private final TagMapper tagMapper;
     private final CommentRepository commentRepository;
     private final FollowerService followerService;
     private final CodeService codeService;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository, CommentRepository commentRepository, FollowerService followerService, CodeService codeService) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, TagRepository tagRepository, TagMapper tagMapper, CommentRepository commentRepository, FollowerService followerService, CodeService codeService) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
         this.attachmentRepository = attachmentRepository;
         this.tagRepository = tagRepository;
+        this.tagMapper = tagMapper;
         this.commentRepository = commentRepository;
         this.followerService = followerService;
         this.codeService = codeService;

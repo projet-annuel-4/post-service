@@ -14,6 +14,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
     List<TagEntity> findByName(String tagName);
     TagEntity findByPostId(Long id);
     Optional<List<TagEntity>> findTagEntitiesByName(String tagName);
+    Optional<List<TagEntity>> findTagEntitiesByPostId(Long post_id);
     TagEntity findTagEntitiesByNameAndPostId(String name, Long post_id);
 
     void deleteAllByPostId(Long postId);
