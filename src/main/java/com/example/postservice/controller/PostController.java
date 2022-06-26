@@ -8,6 +8,7 @@ import com.example.postservice.data.request.PostRequest;
 import com.example.postservice.data.response.PostResponse;
 import com.example.postservice.domain.mapper.AttachmentMapper;
 import com.example.postservice.domain.mapper.CommentMapper;
+import com.example.postservice.domain.mapper.PostMapper;
 import com.example.postservice.domain.mapper.TagMapper;
 import com.example.postservice.service.*;
 import com.sun.istack.NotNull;
@@ -15,8 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -30,6 +31,7 @@ public class PostController {
     
 
     private final PostService postService;
+    private final PostMapper postMapper;
     private final UserService userService;
     private final TagMapper tagMapper;
     private final TagService tagService;
@@ -39,8 +41,9 @@ public class PostController {
     private final CommentService commentService;
     private final CommentMapper commentMapper;
 
-    public PostController(PostService postService, UserService userService, TagMapper tagMapper, TagService tagService, AttachmentMapper attachmentMapper, AttachmentService attachmentService, LikeService likeService, CommentService commentService, CommentMapper commentMapper) {
+    public PostController(PostService postService, PostMapper postMapper, UserService userService, TagMapper tagMapper, TagService tagService, AttachmentMapper attachmentMapper, AttachmentService attachmentService, LikeService likeService, CommentService commentService, CommentMapper commentMapper) {
         this.postService = postService;
+        this.postMapper = postMapper;
         this.userService = userService;
         this.tagMapper = tagMapper;
         this.tagService = tagService;
@@ -84,43 +87,26 @@ public class PostController {
             return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-
         var post = postService.create(postRequest, user.get());
 
-        //TODO : Mettre la logique métier dans le create() du service de post
-
-        if(!postRequest.getTagName().isBlank()) {
-            var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.getId());
-            tagService.create(tagRequest, post);
-        }
-
-        if(!postRequest.getAttachmentUrl().isBlank() && !postRequest.getAttachmentDescription().isBlank()){
-            var attachmentRequest = attachmentMapper.toRequest(
-                    postRequest.getAttachmentUrl(),
-                    postRequest.getAttachmentDescription(),
-                    postRequest.getUserId()
-            );
-            attachmentService.create(attachmentRequest, post);
-        }
-        //
-        return new ResponseEntity<>(toResponse(post), HttpStatus.CREATED);
+        return new ResponseEntity<>(PostMapper.modelToResponse(post), HttpStatus.CREATED);
     }
 
     @PutMapping("/{postId}")
     public ResponseEntity<?> update(@PathVariable Long postId, @RequestBody PostRequest postRequest){
         var post = postService.getById(postId);
-        if(post.isEmpty()){
+        if(post == null){
             return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         if(!postRequest.getTagName().isBlank()) {
-            var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.get().getId());
+            var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.getId());
 
             var tagExist = tagService.getByNameAndPostId(postRequest.getTagName(), postId);
             if(tagExist != null) {
                 tagService.update(tagRequest);
             } else {
-                tagService.create(tagRequest, post.get());
+                tagService.create(tagRequest, postMapper.modelToEntity(post));
             }
         }
 
@@ -134,29 +120,35 @@ public class PostController {
             if(attachmentExist != null) {
                 attachmentService.update(attachmentRequest);
             } else {
-                attachmentService.create(attachmentRequest, post.get());
+                attachmentService.create(attachmentRequest, postMapper.modelToEntity(post));
             }
         }
 
         var postUpdated = postService.update(postId, postRequest);
 
-        return new ResponseEntity<>(toResponse(postUpdated), HttpStatus.OK);
+        return new ResponseEntity<>(PostMapper.modelToResponse(postUpdated), HttpStatus.OK);
     }
 
     @GetMapping("/{postId}")
     public ResponseEntity<?> getById(@PathVariable @NotNull Long postId){
         var post = postService.getById(postId);
-        if(post.isEmpty()){
+        if(post == null){
             return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(PostMapper.modelToResponse(post), HttpStatus.FOUND);
+    }
 
-        var postTags = tagService.getAllByPostId(postId).get()
+    /**
+     * @return All the posts in the BDD
+     */
+    @GetMapping()
+    public ResponseEntity<List<PostResponse>> getAll(){
+        var posts = postService.getAll()
                 .stream()
-                .map(TagMapper::toResponse)
-                .collect(Collectors.toList());
+                .map(PostMapper::modelToResponse)
+                .collect(toList());
 
-
-        return new ResponseEntity<>(toResponse(post.get()).setTags(postTags), HttpStatus.FOUND);
+        return new ResponseEntity<>(posts, HttpStatus.FOUND);
     }
 
     /**
@@ -171,31 +163,18 @@ public class PostController {
             return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-         var posts = postService.getAllByUser(user.get())
+        var posts = postService.getAllByUser(user.get())
                 .stream()
-                .map(this::toResponse)
+                .map(PostMapper::modelToResponse)
                 .collect(toList());
 
         return new ResponseEntity<>(posts, HttpStatus.FOUND);
     }
 
-
-    /**
-     * @return All the posts in the BDD
-     */
-    @GetMapping()
-    public ResponseEntity<List<PostResponse>> getAll(){
-        var posts = postService.getAll()
-                .stream()
-                .map(this::toResponse)
-                .collect(toList());
-
-        return new ResponseEntity<>(posts, HttpStatus.FOUND);
-    }
 
     /** SELECT * FROM post WHERE id = (SELECT post_id FROM tag WHERE name = "js"); **/
     @GetMapping("/tagName/{tagName}")
-    public ResponseEntity<?> getAllByTag(@PathVariable String tagName){
+    public ResponseEntity<?> getAllByTagName(@PathVariable String tagName){
         var tags = tagService.getAllTagByName(tagName);
         if(tags.isEmpty()){
             return new ResponseEntity<>("Tag not found", HttpStatus.NOT_FOUND);
@@ -208,7 +187,7 @@ public class PostController {
 
         return new ResponseEntity<>(posts, HttpStatus.FOUND);
     }
-    
+
     /**
      * @param tagNameList : Tag List
      * @return : Post By TagList
@@ -224,7 +203,7 @@ public class PostController {
 
         var postResponses = posts
                 .stream()
-                .map(this::toResponse)
+                .map(PostMapper::modelToResponse)
                 .collect(toList());
 
         return new ResponseEntity<>(postResponses, HttpStatus.FOUND);
@@ -245,59 +224,11 @@ public class PostController {
 
         var postsResponses = postService.getAllWithFilter(filters)
                                                             .stream()
-                                                            .map(this::toResponse)
+                                                            .map(PostMapper::modelToResponse)
                                                             .collect(toList());
         return new ResponseEntity<>(postsResponses, HttpStatus.FOUND);
     }
 
-
-
-    /**
-     * @param postId : Id of the post
-     * @param userId : Id of the user who likes
-     */
-    @PostMapping("/{postId}/like/userId/{userId}")
-    public ResponseEntity<?> likePost(@PathVariable Long postId, @PathVariable Long userId){
-        var post = postService.getById(postId);
-        if(post.isEmpty()){
-            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
-        }
-
-        var user = userService.getById(userId);
-        if(user.isEmpty()){
-            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-        }
-
-        var alreadyLiked = likeService.getByPostAndUser(post.get(), user.get());
-        if(alreadyLiked != null){
-            return new ResponseEntity<>("You have already like this post", HttpStatus.FORBIDDEN);
-        }
-
-        likeService.like(post.get(), user.get());
-
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
-    }
-
-    /**
-     * @param postId :Id of the post
-     * @param userId : Id of the user who likes
-     */
-    @PostMapping("/{postId}/dislike/userId/{userId}")
-    public ResponseEntity<?> dislike(@PathVariable Long postId, @PathVariable Long userId){
-        var post = postService.getById(postId);
-        if(post.isEmpty()){
-            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
-        }
-
-        var user = userService.getById(userId);
-        if(user.isEmpty()){
-            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-        }
-
-        likeService.dislike(post.get(), user.get());
-
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
-    }
 
     /**
      * @apiNote SELECT * FROM user  WHERE id = ( SELECT user_id FROM user_like WHERE post_id = id du post )
@@ -307,7 +238,7 @@ public class PostController {
     @GetMapping("/{postId}/userLiked")
     public ResponseEntity<?> getUsersLiked(@PathVariable Long postId){
         var post = postService.getById(postId);
-        if(post.isEmpty()){
+        if(post == null){
             return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
@@ -336,43 +267,10 @@ public class PostController {
         if(likeList.isPresent() && likeList.get().isEmpty()){
             return new ResponseEntity<>("The user didn't like any post", HttpStatus.NO_CONTENT);
         }
-        
+
         var postLiked = postService.getPostLiked(likeList.get());
 
         return new ResponseEntity<>(postLiked, HttpStatus.FOUND);
-    }
-
-    @DeleteMapping("{postId}")
-    public ResponseEntity<?> delete (@PathVariable Long postId){
-        var post = postService.getById(postId);
-        if(post.isEmpty()){
-            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
-        }
-        postService.delete(post.get());
-
-        return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
-    }
-
-    /**
-     * @apiNote Côté front, appeler la route de création de post PUIS la route comment
-     *          Pour commenter un commentaires -> inverser les id dans le commentRequest
-     * @param commentRequest : Object with Id of the post question and Id of the answer post
-     */
-    @PostMapping("/answer")
-    public ResponseEntity<?> comment(@RequestBody @NotNull CommentRequest commentRequest){
-        var user = userService.getById(commentRequest.getUserId());
-        if(user.isEmpty()) return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-
-        var post = postService.getById(commentRequest.getPostId());
-        if(post.isEmpty())  return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
-
-        var answer = postService.getById(commentRequest.getAnswerId());
-        if(answer.isEmpty()) return new ResponseEntity<>("Answer post not found", HttpStatus.NOT_FOUND);
-
-
-        var comment = commentService.create(post.get(), answer.get(), user.get());
-
-        return new ResponseEntity<>(commentMapper.entityToResponse(comment), HttpStatus.ACCEPTED);
     }
 
 
@@ -384,9 +282,12 @@ public class PostController {
     @GetMapping("{postId}/answers")
     public ResponseEntity<?> getAllPostAnswers(@PathVariable Long postId){
         var post = postService.getById(postId);
-        if(post.isEmpty())  return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+        if(post == null)  return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
 
-        var answers = postService.getAllPostAnswersById(postId);
+        var answers = postService.getAllPostAnswersById(postId)
+                .stream()
+                .map(PostMapper::modelToResponse)
+                .collect(toList());
 
         return new ResponseEntity<>(answers, HttpStatus.FOUND);
     }
@@ -407,25 +308,93 @@ public class PostController {
 
         var subscriptionsPost = postService.getAllSubscriptionPostByIdUser(userId)
                 .stream()
-                .map(this::toResponse)
+                .map(PostMapper::modelToResponse)
                 .collect(toList());
         return new ResponseEntity<>(subscriptionsPost, HttpStatus.FOUND);
     }
-    
 
-    //Get toutes les réponses d'un user (en option)
+    /**
+     * @apiNote Côté front, appeler la route de création de post PUIS la route comment
+     *          Pour commenter un commentaires -> inverser les id dans le commentRequest
+     * @param commentRequest : Object with Id of the post question and Id of the answer post
+     */
+    @PostMapping("/answer")
+    public ResponseEntity<?> comment(@RequestBody @NotNull CommentRequest commentRequest){
+        var user = userService.getById(commentRequest.getUserId());
+        if(user.isEmpty()) return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+
+        var post = postService.getById(commentRequest.getPostId());
+        if(post == null)  return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+
+        var answer = postService.getById(commentRequest.getAnswerId());
+        if(answer == null) return new ResponseEntity<>("Answer post not found", HttpStatus.NOT_FOUND);
 
 
-    //TODO : Mettre dans une classe PostMapper
-    private PostResponse toResponse(PostEntity postEntity){
-        return new PostResponse()
-                .setId(postEntity.getId())
-                .setContent(postEntity.getContent())
-                .setNbLike(postEntity.getNbLike())
-                .setCreationDate(postEntity.getCreationDate())
-                .setUpdateDate(postEntity.getUpdateDate())
-                .setUser(postEntity.getUser());
+        var comment = commentService.create(postMapper.modelToEntity(post), postMapper.modelToEntity(answer), user.get());
+
+        return new ResponseEntity<>(commentMapper.entityToResponse(comment), HttpStatus.ACCEPTED);
     }
 
+    /**
+     * @param postId : Id of the post
+     * @param userId : Id of the user who likes
+     */
+    @PostMapping("/{postId}/like/userId/{userId}")
+    public ResponseEntity<?> likePost(@PathVariable Long postId, @PathVariable Long userId){
+        var post = postService.getById(postId);
+        if(post == null){
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        var user = userService.getById(userId);
+        if(user.isEmpty()){
+            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        var alreadyLiked = likeService.getByPostAndUser(postMapper.modelToEntity(post), user.get());
+        if(alreadyLiked != null){
+            return new ResponseEntity<>("You have already like this post", HttpStatus.FORBIDDEN);
+        }
+
+        likeService.like(postMapper.modelToEntity(post), user.get());
+
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    /**
+     * @param postId :Id of the post
+     * @param userId : Id of the user who likes
+     */
+    @PostMapping("/{postId}/dislike/userId/{userId}")
+    public ResponseEntity<?> dislike(@PathVariable Long postId, @PathVariable Long userId){
+        var post = postService.getById(postId);
+        if(post == null){
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        var user = userService.getById(userId);
+        if(user.isEmpty()){
+            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        likeService.dislike(postMapper.modelToEntity(post), user.get());
+
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+
+    @DeleteMapping("{postId}")
+    public ResponseEntity<?> delete (@PathVariable Long postId){
+        var post = postService.getById(postId);
+        if(post == null){
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+        postService.delete(postMapper.modelToEntity(post));
+
+        return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
+    }
+
+
+    //Get toutes les réponses d'un user (en option)
 
 }

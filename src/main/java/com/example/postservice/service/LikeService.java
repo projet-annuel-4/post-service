@@ -51,6 +51,7 @@ public class LikeService {
     @Transactional
     public void dislike(PostEntity post, UserEntity user){
         likeRepository.deleteByPostAndUser(post, user);
+        postService.update(post.getId(), postMapper.entityToRequest(post));
     }
 
 

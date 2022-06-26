@@ -1,33 +1,26 @@
-package com.example.postservice.data.entities;
+package com.example.postservice.domain.model;
 
-import org.springframework.data.jpa.repository.Query;
+import com.example.postservice.data.entities.UserEntity;
+import com.example.postservice.data.response.TagResponse;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
 
-@Entity
-@Table(name = "post")
-public class PostEntity {
+public class PostModel {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String content;
     private Integer nbLike;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    private List<TagResponse> tags;
     private UserEntity user;
-
 
     public Long getId() {
         return id;
     }
 
-    public PostEntity setId(Long id) {
+    public PostModel setId(Long id) {
         this.id = id;
         return this;
     }
@@ -36,7 +29,7 @@ public class PostEntity {
         return content;
     }
 
-    public PostEntity setContent(String content) {
+    public PostModel setContent(String content) {
         this.content = content;
         return this;
     }
@@ -45,7 +38,7 @@ public class PostEntity {
         return nbLike;
     }
 
-    public PostEntity setNbLike(Integer nbLike) {
+    public PostModel setNbLike(Integer nbLike) {
         this.nbLike = nbLike;
         return this;
     }
@@ -54,7 +47,7 @@ public class PostEntity {
         return creationDate;
     }
 
-    public PostEntity setCreationDate(LocalDateTime creationDate) {
+    public PostModel setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
         return this;
     }
@@ -63,8 +56,17 @@ public class PostEntity {
         return updateDate;
     }
 
-    public PostEntity setUpdateDate(LocalDateTime updateDate) {
+    public PostModel setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
+        return this;
+    }
+
+    public List<TagResponse> getTags() {
+        return tags;
+    }
+
+    public PostModel setTags(List<TagResponse> tags) {
+        this.tags = tags;
         return this;
     }
 
@@ -72,7 +74,7 @@ public class PostEntity {
         return user;
     }
 
-    public PostEntity setUser(UserEntity user) {
+    public PostModel setUser(UserEntity user) {
         this.user = user;
         return this;
     }
