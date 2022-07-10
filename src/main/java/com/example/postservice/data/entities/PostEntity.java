@@ -1,10 +1,7 @@
 package com.example.postservice.data.entities;
 
-import org.springframework.data.jpa.repository.Query;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "post")
@@ -13,6 +10,7 @@ public class PostEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String title;
     private String content;
     private Integer nbLike;
     private LocalDateTime creationDate;
@@ -29,6 +27,15 @@ public class PostEntity {
 
     public PostEntity setId(Long id) {
         this.id = id;
+        return this;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public PostEntity setTitle(String title) {
+        this.title = title;
         return this;
     }
 

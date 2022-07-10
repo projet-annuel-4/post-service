@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 public class PostRequest {
 
+    private String title;
     private String content;
     private Integer nbLike;
     private LocalDateTime creationDate;
@@ -13,6 +14,15 @@ public class PostRequest {
     private String tagName;
     private String attachmentUrl;
     private String attachmentDescription;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public PostRequest setTitle(String title) {
+        this.title = title;
+        return this;
+    }
 
     public String getContent() {
         return content;

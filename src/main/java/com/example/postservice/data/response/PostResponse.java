@@ -2,14 +2,13 @@ package com.example.postservice.data.response;
 
 import com.example.postservice.data.entities.UserEntity;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public class PostResponse {
 
     private Long id;
+    private String title;
     private String content;
     private Integer nbLike;
     private LocalDateTime creationDate;
@@ -23,6 +22,15 @@ public class PostResponse {
 
     public PostResponse setId(Long id) {
         this.id = id;
+        return this;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public PostResponse setTitle(String title) {
+        this.title = title;
         return this;
     }
 

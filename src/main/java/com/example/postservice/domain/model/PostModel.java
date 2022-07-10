@@ -9,6 +9,7 @@ import java.util.List;
 public class PostModel {
 
     private Long id;
+    private String title;
     private String content;
     private Integer nbLike;
     private LocalDateTime creationDate;
@@ -22,6 +23,15 @@ public class PostModel {
 
     public PostModel setId(Long id) {
         this.id = id;
+        return this;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public PostModel setTitle(String title) {
+        this.title = title;
         return this;
     }
 

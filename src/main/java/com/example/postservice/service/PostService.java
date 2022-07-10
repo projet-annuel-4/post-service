@@ -53,6 +53,7 @@ public class PostService {
 
         //Premier enregistrement pour avoir l'id du post
         var post = new PostEntity()
+                .setTitle(postRequest.getTitle())
                 .setContent(postRequest.getContent())
                 .setNbLike(0)
                 .setCreationDate(LocalDateTime.now())
@@ -104,6 +105,7 @@ public class PostService {
 
     public PostModel update(Long postId, PostRequest postRequest){
         var post = postRepository.getById(postId)
+                .setTitle(postRequest.getTitle())
                 .setContent(postRequest.getContent())
                 .setNbLike(likeRepository.countLikeEntitiesByPostId(postId))
                 .setUpdateDate(LocalDateTime.now());

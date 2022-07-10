@@ -11,6 +11,7 @@ public class PostMapper {
 
     public PostRequest entityToRequest(PostEntity postEntity){
         return new PostRequest()
+                .setTitle(postEntity.getTitle())
                 .setContent(postEntity.getContent())
                 .setNbLike(postEntity.getNbLike())
                 .setCreationDate(postEntity.getCreationDate())
@@ -21,6 +22,7 @@ public class PostMapper {
     public static PostModel entityToModel(PostEntity postEntity){
         return new PostModel()
                 .setId(postEntity.getId())
+                .setTitle(postEntity.getTitle())
                 .setContent(postEntity.getContent())
                 .setNbLike(postEntity.getNbLike())
                 .setCreationDate(postEntity.getCreationDate())
@@ -31,6 +33,7 @@ public class PostMapper {
     public PostEntity modelToEntity(PostModel postModel){
         return new PostEntity()
                 .setId(postModel.getId())
+                .setTitle(postModel.getTitle())
                 .setContent(postModel.getContent())
                 .setNbLike(postModel.getNbLike())
                 .setCreationDate(postModel.getCreationDate())
@@ -41,6 +44,7 @@ public class PostMapper {
     public static PostResponse modelToResponse(PostModel postModel){
         return new PostResponse()
                 .setId(postModel.getId())
+                .setTitle(postModel.getTitle())
                 .setContent(postModel.getContent())
                 .setNbLike(postModel.getNbLike())
                 .setCreationDate(postModel.getCreationDate())
