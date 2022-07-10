@@ -16,6 +16,8 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
     PostEntity getById(Long id);
     List<PostEntity> getAllByUser(UserEntity user);
+
+    List<PostEntity> getAllByTitle(String title);
     List<PostEntity> findAllById(Long id);
 
     @Query("select post from PostEntity post where post.content like %:content% and post.creationDate > :creationDate")

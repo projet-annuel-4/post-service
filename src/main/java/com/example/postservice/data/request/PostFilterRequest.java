@@ -3,12 +3,21 @@ package com.example.postservice.data.request;
 
 public class PostFilterRequest {
 
+    private String title;
     private String content;
-
     private String tagName;
 
     private String creationDate;
 
+
+    public String getTitle() {
+        return title;
+    }
+
+    public PostFilterRequest setTitle(String title) {
+        this.title = title;
+        return this;
+    }
 
     public String getContent() {
         return content;

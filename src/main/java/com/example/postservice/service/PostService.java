@@ -160,6 +160,13 @@ public class PostService {
         return posts;
     }
 
+    public List<PostModel> getAllByTitle(String title){
+        return postRepository.getAllByTitle(title)
+                .stream()
+                .map(PostMapper::entityToModel)
+                .collect(toList());
+    }
+
     public ArrayList<PostModel> getAllByTag(List<TagEntity> tagEntityList){
 
         var posts = new ArrayList<PostModel>();
@@ -191,6 +198,12 @@ public class PostService {
         } else {
             dateForQuery = DateTimeUtil.dateFromString("1900-01-01 00:00:00");
         }
+
+
+        if(!filters.getTitle().isEmpty() && filters.getTitle() != null){
+            postsWithFilter.addAll(this.getAllByTitle(filters.getTitle()));
+        }
+
 
         if(!filters.getTagName().isEmpty()){
             var tags = tagRepository.findTagEntitiesByName(filters.getTagName());

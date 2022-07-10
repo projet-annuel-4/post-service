@@ -171,6 +171,16 @@ public class PostController {
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
+    @GetMapping("/title/{title}")
+    public ResponseEntity<List<PostResponse>> getAllByTitle(@PathVariable String title){
+        var postsByTitle = postService.getAllByTitle(title)
+                .stream()
+                .map(PostMapper::modelToResponse)
+                .collect(toList());
+
+        return new ResponseEntity<>(postsByTitle, HttpStatus.OK);
+    }
+
 
     /** SELECT * FROM post WHERE id = (SELECT post_id FROM tag WHERE name = "js"); **/
     @GetMapping("/tagName/{tagName}")
@@ -218,7 +228,8 @@ public class PostController {
     @GetMapping("/filters")
     public ResponseEntity<List<PostResponse>> getPostsWithFilter(@RequestBody PostFilterRequest filters){
 
-        if(filters.getContent().isBlank() && filters.getCreationDate().isBlank() && !filters.getTagName().isBlank()){
+        if(filters.getTitle().isBlank() && filters.getContent().isBlank() && filters.getCreationDate().isBlank()
+                && !filters.getTagName().isBlank()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
