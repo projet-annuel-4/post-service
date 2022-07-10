@@ -135,7 +135,7 @@ public class PostController {
         if(post == null){
             return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(PostMapper.modelToResponse(post), HttpStatus.FOUND);
+        return new ResponseEntity<>(PostMapper.modelToResponse(post), HttpStatus.OK);
     }
 
     /**
@@ -148,7 +148,7 @@ public class PostController {
                 .map(PostMapper::modelToResponse)
                 .collect(toList());
 
-        return new ResponseEntity<>(posts, HttpStatus.FOUND);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     /**
@@ -168,7 +168,7 @@ public class PostController {
                 .map(PostMapper::modelToResponse)
                 .collect(toList());
 
-        return new ResponseEntity<>(posts, HttpStatus.FOUND);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
 
@@ -185,7 +185,7 @@ public class PostController {
             return new ResponseEntity<>("No post with this tag", HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(posts, HttpStatus.FOUND);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     /**
@@ -206,7 +206,7 @@ public class PostController {
                 .map(PostMapper::modelToResponse)
                 .collect(toList());
 
-        return new ResponseEntity<>(postResponses, HttpStatus.FOUND);
+        return new ResponseEntity<>(postResponses, HttpStatus.OK);
     }
 
     /**
@@ -226,7 +226,7 @@ public class PostController {
                                                             .stream()
                                                             .map(PostMapper::modelToResponse)
                                                             .collect(toList());
-        return new ResponseEntity<>(postsResponses, HttpStatus.FOUND);
+        return new ResponseEntity<>(postsResponses, HttpStatus.OK);
     }
 
 
@@ -248,7 +248,7 @@ public class PostController {
         }
 
         var userLiked = postService.getUserLiked(postLikeList.get());
-        return new ResponseEntity<>(userLiked, HttpStatus.FOUND);
+        return new ResponseEntity<>(userLiked, HttpStatus.OK);
     }
 
     /**
@@ -270,7 +270,7 @@ public class PostController {
 
         var postLiked = postService.getPostLiked(likeList.get());
 
-        return new ResponseEntity<>(postLiked, HttpStatus.FOUND);
+        return new ResponseEntity<>(postLiked, HttpStatus.OK);
     }
 
 
@@ -289,7 +289,7 @@ public class PostController {
                 .map(PostMapper::modelToResponse)
                 .collect(toList());
 
-        return new ResponseEntity<>(answers, HttpStatus.FOUND);
+        return new ResponseEntity<>(answers, HttpStatus.OK);
     }
 
 
@@ -310,7 +310,7 @@ public class PostController {
                 .stream()
                 .map(PostMapper::modelToResponse)
                 .collect(toList());
-        return new ResponseEntity<>(subscriptionsPost, HttpStatus.FOUND);
+        return new ResponseEntity<>(subscriptionsPost, HttpStatus.OK);
     }
 
     /**

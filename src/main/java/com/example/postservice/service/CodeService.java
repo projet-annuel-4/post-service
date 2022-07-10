@@ -65,5 +65,9 @@ public class CodeService {
         return list;
     }
 
+    public void deleteAllByPostId(Long postId){
+        codeRepository.deleteAllByPostId(postId);
+    }
+
 
 }

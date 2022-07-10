@@ -268,6 +268,7 @@ public class PostService {
         tagRepository.deleteAllByPostId(post.getId());
         likeRepository.deleteAllByPostId(post.getId());
         commentRepository.deleteAllByPostId(post.getId());
+        codeService.deleteAllByPostId(post.getId());
 
         post.setUser(null);
         postRepository.deleteById(post.getId());

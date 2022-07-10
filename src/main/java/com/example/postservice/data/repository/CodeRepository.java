@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CodeRepository extends JpaRepository<CodeEntity, Long>{
+
+    void deleteAllByPostId(Long postId);
     
 }
