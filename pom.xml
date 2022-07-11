@@ -15,7 +15,6 @@
     <description>post-service</description>
     <properties>
         <java.version>11</java.version>
-        <docker.image.prefix>esgi</docker.image.prefix>
         <spring-cloud.version>2020.0.3</spring-cloud.version>
         <sonar.organization>projet-annuel-4</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -43,6 +42,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.aws.rds</groupId>
+            <artifactId>aws-postgresql-jdbc</artifactId>
+            <version>0.1.0</version>
         </dependency>
         <!--jpa-->
         <dependency>
@@ -202,28 +206,6 @@
                         <phase>test</phase>
                         <goals>
                             <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- This plugin is used to create a docker image and publish the image to docker hub-->
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>1.4.13</version>
-                <configuration>
-                    <repository>${docker.image.prefix}/${project.artifactId}</repository>
-                    <tag>${project.version}</tag>
-                    <buildArgs>
-                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-                    </buildArgs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>build</goal>
                         </goals>
                     </execution>
                 </executions>
