@@ -61,9 +61,13 @@ public class PostService {
                 .setUser(user);
         postRepository.save(post);
 
-        if(!postRequest.getTagName().isBlank()) {
-            var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.getId());
-            tagService.create(tagRequest, post);
+        if(!postRequest.getTagsName().isEmpty()) {
+            if(postRequest.getTagsName().size() > 5) throw new RuntimeException("5 tags Max");
+            postRequest.getTagsName().forEach(tagName -> {
+                var tagRequest = tagMapper.toRequest(tagName, post.getId());
+                tagService.create(tagRequest, post);
+            });
+
         }
 
         if(!postRequest.getAttachmentUrl().isBlank() && !postRequest.getAttachmentDescription().isBlank()){
@@ -100,7 +104,16 @@ public class PostService {
                 .setUser(user);
         postRepository.save(post);
 
-        return PostMapper.entityToModel(postToUpdate.get());
+
+        var postTags = tagRepository.findTagEntitiesByPostId(postToUpdate.get().getId()).get()
+                .stream()
+                .map(TagMapper::toResponse)
+                .collect(toList());
+
+        var postModel = PostMapper.entityToModel(postToUpdate.get());
+        postModel.setTags(postTags);
+
+        return postModel;
     }
 
     public PostModel update(Long postId, PostRequest postRequest){

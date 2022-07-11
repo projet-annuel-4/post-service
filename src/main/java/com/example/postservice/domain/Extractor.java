@@ -19,6 +19,8 @@ public class Extractor {
 
 
     public ArrayList<String> getCodeSectionFromContent(String content){
+        //TODO : '#(.+?)#(.+?)#(.+?)#'
+        //  #js# code1 #js#
 
         Pattern p = Pattern.compile("#(.+?)##", Pattern.DOTALL);
         Matcher m = p.matcher(content);

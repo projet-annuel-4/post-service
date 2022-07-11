@@ -1,7 +1,6 @@
 package com.example.postservice.controller;
 
 
-import com.example.postservice.data.entities.PostEntity;
 import com.example.postservice.data.request.CommentRequest;
 import com.example.postservice.data.request.PostFilterRequest;
 import com.example.postservice.data.request.PostRequest;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -99,15 +97,17 @@ public class PostController {
             return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        if(!postRequest.getTagName().isBlank()) {
-            var tagRequest = tagMapper.toRequest(postRequest.getTagName(), post.getId());
+        if(!postRequest.getTagsName().isEmpty()) {
+            postRequest.getTagsName().forEach(tagName -> {
+                var tagRequest = tagMapper.toRequest(tagName, post.getId());
 
-            var tagExist = tagService.getByNameAndPostId(postRequest.getTagName(), postId);
-            if(tagExist != null) {
-                tagService.update(tagRequest);
-            } else {
-                tagService.create(tagRequest, postMapper.modelToEntity(post));
-            }
+                var tagExist = tagService.getByNameAndPostId(tagName, postId);
+                if(tagExist != null) {
+                    tagService.update(tagRequest);
+                } else {
+                    tagService.create(tagRequest, postMapper.modelToEntity(post));
+                }
+            });
         }
 
         if(!postRequest.getAttachmentUrl().isBlank() && !postRequest.getAttachmentDescription().isBlank()){

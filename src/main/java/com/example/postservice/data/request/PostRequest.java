@@ -2,6 +2,7 @@ package com.example.postservice.data.request;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PostRequest {
 
@@ -11,7 +12,7 @@ public class PostRequest {
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
     private Long userId;
-    private String tagName;
+    private List<String> tagsName;
     private String attachmentUrl;
     private String attachmentDescription;
 
@@ -69,12 +70,12 @@ public class PostRequest {
         return this;
     }
 
-    public String getTagName() {
-        return tagName;
+    public List<String> getTagsName() {
+        return tagsName;
     }
 
-    public PostRequest setTagName(String tagName) {
-        this.tagName = tagName;
+    public PostRequest setTagsName(List<String> tagsName) {
+        this.tagsName = tagsName;
         return this;
     }
 
