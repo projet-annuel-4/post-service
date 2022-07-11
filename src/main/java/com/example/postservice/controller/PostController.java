@@ -77,9 +77,6 @@ public class PostController {
      */
     @PostMapping()
     public ResponseEntity<?> create(@RequestBody PostRequest postRequest){
-
-        //TODO : ajouter une limite de 5 tag par post
-
         var user = userService.getById(postRequest.getUserId());
         if(user.isEmpty()){
             return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
