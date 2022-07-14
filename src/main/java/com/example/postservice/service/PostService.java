@@ -287,7 +287,8 @@ public class PostService {
         var posts = new ArrayList<PostModel>();
         subscriptionsLink.forEach(subscription -> posts.addAll(this.getAllByUser(subscription.getUser())));
 
-        return posts;
+
+        return sortPostByLocalDateTime(posts);
     }
 
     @Transactional
@@ -316,6 +317,14 @@ public class PostService {
             postModel.setTags(postTags);
             posts.add(postModel);
         });
+
+        return posts;
+    }
+
+    private List<PostModel> sortPostByLocalDateTime(List<PostModel> posts){
+        Comparator<PostModel> comparator = Comparator.comparing(PostModel::getCreationDate);
+
+        posts.sort(comparator);
 
         return posts;
     }
