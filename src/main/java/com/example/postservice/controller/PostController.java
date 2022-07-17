@@ -300,6 +300,23 @@ public class PostController {
         return new ResponseEntity<>(answers, HttpStatus.OK);
     }
 
+    /**
+     * @param userId : Id of the user
+     * @return All User Answers
+     */
+    @GetMapping("user/{userId}/answers")
+    public ResponseEntity<?> getAllUserAnswers(@PathVariable Long userId){
+        var user = userService.getById(userId);
+        if(user.isEmpty()) return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+
+        var userAnswers = postService.getAllUserAnswers(userId)
+                .stream()
+                .map(PostMapper::modelToResponse)
+                .collect(toList());
+
+        return new ResponseEntity<>(userAnswers, HttpStatus.OK);
+    }
+
 
     /**
      * @param userId : Id of the user who want to see the posts of his subscriptions

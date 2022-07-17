@@ -281,6 +281,17 @@ public class PostService {
         return answers;
     }
 
+    public List<PostModel> getAllUserAnswers(Long userId){
+        var comments = commentRepository.findAllByUserId(userId);
+
+        var answers = new ArrayList<PostModel>();
+        comments.forEach(commentEntity -> {
+            answers.add(this.getById(commentEntity.getAnswer().getId()));
+        });
+
+        return answers;
+    }
+
     public List<PostModel> getAllSubscriptionPostByIdUser(Long userId){
         var subscriptionsLink = followerService.getSubscriptionsByUserId(userId);
 
