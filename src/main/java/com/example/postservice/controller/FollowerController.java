@@ -1,10 +1,13 @@
 package com.example.postservice.controller;
 
+import com.example.postservice.domain.mapper.UserMapper;
 import com.example.postservice.service.FollowerService;
 import com.example.postservice.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static java.util.stream.Collectors.toList;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -18,7 +21,6 @@ public class FollowerController {
         this.userService = userService;
         this.followerService = followerService;
     }
-
 
     /**
      * User1 follow the user2
@@ -58,6 +60,34 @@ public class FollowerController {
         followerService.unfollow(user1.get(), user2.get());
 
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("{userId}/followers")
+    public ResponseEntity<?> getAllFollowers(@PathVariable Long userId){
+        var user = userService.getById(userId);
+        if(user.isEmpty()) return new ResponseEntity<>("User " + userId + " not found", HttpStatus.NOT_FOUND);
+
+
+        var followers = userService.getAllFollowers(userId)
+                .stream()
+                .map(UserMapper::modelToResponse)
+                .collect(toList());
+
+        return new ResponseEntity<>(followers, HttpStatus.OK);
+    }
+
+    @GetMapping("{userId}/subscriptions")
+    public ResponseEntity<?> getAllSubscriptions(@PathVariable Long userId){
+        var user = userService.getById(userId);
+        if(user.isEmpty()) return new ResponseEntity<>("User " + userId + " not found", HttpStatus.NOT_FOUND);
+
+
+        var followers = userService.getAllSubscriptions(userId)
+                .stream()
+                .map(UserMapper::modelToResponse)
+                .collect(toList());
+
+        return new ResponseEntity<>(followers, HttpStatus.OK);
     }
 
 }

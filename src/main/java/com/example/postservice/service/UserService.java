@@ -9,7 +9,12 @@ import com.example.postservice.domain.mapper.UserMapper;
 import com.example.postservice.domain.model.UserModel;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class UserService {
@@ -42,8 +47,37 @@ public class UserService {
 
         userRepository.save(user);
 
-        return userMapper.entityToModel(user);
+        return UserMapper.entityToModel(user);
     }
 
+    public List<UserModel> getAllFollowers(Long userId){
+        var followerLink = followerRepository.findAllByUserId(userId);
+
+        var followers = new ArrayList<UserEntity>();
+        followerLink.forEach(link -> {
+            var user = getById(link.getFollower().getId());
+            user.ifPresent(followers::add);
+        });
+
+        return followers
+                .stream()
+                .map(UserMapper::entityToModel)
+                .collect(toList());
+    }
+
+    public List<UserModel> getAllSubscriptions(Long userId){
+        var followerLink = followerRepository.findAllByFollowerId(userId);
+
+        var subscriptions = new ArrayList<UserEntity>();
+        followerLink.forEach(link -> {
+            var user = getById(link.getUser().getId());
+            user.ifPresent(subscriptions::add);
+        });
+
+        return subscriptions
+                .stream()
+                .map(UserMapper::entityToModel)
+                .collect(toList());
+    }
 
 }
