@@ -22,6 +22,10 @@ public interface FollowerRepository extends JpaRepository<FollowersEntity, Long>
      */
 
     List<FollowersEntity> findAllByFollowerId(Long followerId);
+    FollowersEntity findByFollowerIdAndUserId(Long followerId, Long userId);
+    Integer countAllByUserId(Long userId);
+    Integer countAllByFollowerId(Long userId);
+    void deleteByFollowerIdAndAndUserId(Long followerId, Long userId);
 
 
 

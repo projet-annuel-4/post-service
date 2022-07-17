@@ -1,36 +1,18 @@
-package com.example.postservice.data.entities;
+package com.example.postservice.data.request;
 
-import com.example.postservice.domain.model.UserModel;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+public class UserRequest {
 
-import javax.persistence.*;
-
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Entity
-@Table(name = "users")
-public class UserEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String firstname;
     private String lastname;
     private String email;
     private Integer nbFollowers;
     private Integer nbSubscription;
 
-    @Id
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getFirstname() {
         return firstname;
     }
 
-    public UserEntity setFirstname(String firstname) {
+    public UserRequest setFirstname(String firstname) {
         this.firstname = firstname;
         return this;
     }
@@ -39,7 +21,7 @@ public class UserEntity {
         return lastname;
     }
 
-    public UserEntity setLastname(String lastname) {
+    public UserRequest setLastname(String lastname) {
         this.lastname = lastname;
         return this;
     }
@@ -48,7 +30,7 @@ public class UserEntity {
         return email;
     }
 
-    public UserEntity setEmail(String email) {
+    public UserRequest setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -57,7 +39,7 @@ public class UserEntity {
         return nbFollowers;
     }
 
-    public UserEntity setNbFollowers(Integer nbFollowers) {
+    public UserRequest setNbFollowers(Integer nbFollowers) {
         this.nbFollowers = nbFollowers;
         return this;
     }
@@ -66,7 +48,7 @@ public class UserEntity {
         return nbSubscription;
     }
 
-    public UserEntity setNbSubscription(Integer nbSubscription) {
+    public UserRequest setNbSubscription(Integer nbSubscription) {
         this.nbSubscription = nbSubscription;
         return this;
     }
