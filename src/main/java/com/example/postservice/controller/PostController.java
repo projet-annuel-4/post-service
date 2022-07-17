@@ -420,6 +420,4 @@ public class PostController {
     }
 
 
-    //Get toutes les réponses d'un user (en option)
-
 }
