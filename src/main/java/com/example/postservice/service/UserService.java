@@ -37,6 +37,11 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+    public UserModel getByEmail(String email){
+        var user = userRepository.findByEmail(email);
+        return UserMapper.entityToModel(user);
+    }
+
     public UserModel update(Long userId, UserRequest userRequest){
         var user = getById(userId).get()
                 .setFirstname(userRequest.getFirstname())
