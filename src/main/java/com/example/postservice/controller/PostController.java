@@ -222,7 +222,7 @@ public class PostController {
      * @param filters : PostFilterRequest(content, tagName, creationDate)
      * @return Posts whose match with the filter
      */
-    @GetMapping("/filters")
+    @PostMapping("/filters")
     public ResponseEntity<List<PostResponse>> getPostsWithFilter(@RequestBody PostFilterRequest filters){
 
         if(filters.getTitle().isBlank() && filters.getContent().isBlank() && filters.getCreationDate().isBlank()
@@ -230,7 +230,7 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        var postsResponses = postService.getAllWithFilter(filters)
+        var postsResponses = postService.getAllWithFilterV2(filters)
                                                             .stream()
                                                             .map(PostMapper::modelToResponse)
                                                             .collect(toList());

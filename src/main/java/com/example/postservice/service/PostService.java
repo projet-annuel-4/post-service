@@ -9,11 +9,13 @@ import com.example.postservice.domain.mapper.PostMapper;
 import com.example.postservice.domain.mapper.TagMapper;
 import com.example.postservice.domain.model.PostModel;
 import com.example.postservice.util.DateTimeUtil;
+import com.google.common.collect.Sets;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 
@@ -180,6 +182,20 @@ public class PostService {
                 .collect(toList());
     }
 
+    public List<PostModel> getAllByCreationDate(LocalDateTime creationDate){
+        return postRepository.findAllByCreationDateAfter(creationDate)
+                .stream()
+                .map(PostMapper::entityToModel)
+                .collect(toList());
+    }
+
+    public List<PostModel> getAllByContent(String content){
+        return postRepository.findAllByContent(content)
+                .stream()
+                .map(PostMapper::entityToModel)
+                .collect(toList());
+    }
+
     public ArrayList<PostModel> getAllByTag(List<TagEntity> tagEntityList){
 
         var posts = new ArrayList<PostModel>();
@@ -198,7 +214,8 @@ public class PostService {
         return posts;
     }
 
-    public List<PostModel> getAllWithFilter(PostFilterRequest filters){
+
+    public List<PostModel> getAllWithFilterV1(PostFilterRequest filters){
 
         var postsWithFilter = new ArrayList<PostModel>();
 
@@ -249,6 +266,127 @@ public class PostService {
 
         return postsWithFilter;
     }
+
+    public List<PostModel> getAllWithFilterV2(PostFilterRequest filters){
+        var dateForQuery = LocalDateTime.now();
+
+        if (!filters.getCreationDate().isEmpty() && filters.getCreationDate() != null) {
+            if(DateTimeUtil.isValid(filters.getCreationDate())) {
+                dateForQuery = DateTimeUtil.dateFromString(filters.getCreationDate());
+            }
+        } else {
+            dateForQuery = DateTimeUtil.dateFromString("1900-01-01 00:00:00");
+        }
+
+
+        List<PostModel> postFound;
+
+        if(!filters.getTitle().isEmpty() && !filters.getContent().isEmpty() && !filters.getTagName().isEmpty()){
+
+            postFound = postRepository.findAllByAllFilters(filters.getTitle(), filters.getContent(), dateForQuery)
+                    .stream()
+                    .map(PostMapper::entityToModel)
+                    .collect(toList());
+        } else {
+
+            postFound = postRepository.findAllByAnyFilters(filters.getTitle(), filters.getContent(), dateForQuery)
+                    .stream()
+                    .map(PostMapper::entityToModel)
+                    .collect(toList());
+        }
+
+        return addTagsToPostModelList(postFound);
+    }
+
+    //public HashSet<PostModel> getAllWithFilterV3(PostFilterRequest filters){
+    public ArrayList<PostModel> getAllWithFilterV3(PostFilterRequest filters){
+        var postFound = new ArrayList<PostModel>();
+
+        var union = new ArrayList<ArrayList<PostModel>>();
+
+        if(!filters.getTitle().isEmpty() && filters.getTitle() != null){
+            postFound.addAll(getAllByTitle(filters.getTitle()));
+
+            union.add((ArrayList<PostModel>) getAllByTitle(filters.getTitle()));
+        }
+
+        if(!filters.getContent().isEmpty() && filters.getContent() != null){
+            postFound.addAll(getAllByContent(filters.getContent()));
+
+            union.add((ArrayList<PostModel>) getAllByContent(filters.getContent()));
+        }
+
+        var postByTagsForTest3 = new ArrayList<PostModel>();
+
+        if(!filters.getTagName().isEmpty() && filters.getTagName() != null){
+            var tags = tagRepository.findTagEntitiesByName(filters.getTagName());
+            if(tags.isPresent()){
+                var postsByTag = this.getAllByTag(tags.get());
+                postsByTag.forEach(postEntity -> {
+                    if(postEntity != null) {
+                        postFound.add(postEntity);
+
+                        postByTagsForTest3.add(postEntity);
+                    }
+                });
+            }
+        }
+        union.add(postByTagsForTest3);
+
+        var dateForQuery = LocalDateTime.now();
+        if(!filters.getCreationDate().isEmpty() && filters.getCreationDate() != null){
+            if(DateTimeUtil.isValid(filters.getCreationDate())) {
+                dateForQuery = DateTimeUtil.dateFromString(filters.getCreationDate());
+            }
+            postFound.addAll(getAllByCreationDate(dateForQuery));
+
+            union.add((ArrayList<PostModel>) getAllByCreationDate(dateForQuery));
+        }
+
+        //return Sets.newHashSet(postFound);
+
+        return searchIntersection(new ArrayList<>(union));
+    }
+
+    public List<PostModel> getAllWithFilterV4(PostFilterRequest filters){
+        Predicate<PostEntity> postByTitle = e -> filters.getTitle().isEmpty()?true:Objects.equals(e.getTitle(),filters.getTitle());
+        Predicate<PostEntity> postByContent = e -> filters.getContent().isEmpty()?true:Objects.equals(e.getContent(),filters.getContent());
+
+        //var tagName = tagRepository.findTagEntitiesByName(filters.getTagName());
+        //Predicate<PostEntity> postByTagName = e -> filters.getTagName().isEmpty()?true:Objects.equals(e.get,filters.getTagName());
+        Predicate<PostEntity> postByCreationDate = e -> filters.getCreationDate().isEmpty()?true:Objects.equals(e.getCreationDate(),filters.getCreationDate());
+
+
+        var postFound = postRepository.findAll()
+                .stream()
+                //.filter(postByTitle.and(postByContent).and(postByTagName).and(postByCreationDate))
+                .filter(postByTitle.and(postByContent).and(postByCreationDate))
+                .map(PostMapper::entityToModel)
+                .collect(toList());
+
+        return addTagsToPostModelList(postFound);
+    }
+
+    /**
+     * Intersection entre les tableau de chaque filter
+     * @param tabs
+     */
+    private ArrayList<PostModel> searchIntersection(ArrayList<ArrayList<PostModel>> tabs){
+        var res = new ArrayList<PostModel>(tabs.get(0));
+
+        for (List<PostModel> tab : tabs) {
+            for (PostModel post: tab){
+                if(res.contains(post)){
+                    res.add(post);
+                }
+            }
+        }
+
+        res.forEach(r -> System.out.println(r.getId()));
+        return res;
+    }
+
+
 
     public ArrayList<Optional<UserEntity>> getUserLiked(List<LikeEntity> likeEntityList){
         var usersLiked = new ArrayList<Optional<UserEntity>>();

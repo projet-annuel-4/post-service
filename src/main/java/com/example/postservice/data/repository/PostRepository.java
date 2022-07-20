@@ -17,11 +17,31 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     PostEntity getById(Long id);
     List<PostEntity> getAllByUser(UserEntity user);
 
-    List<PostEntity> getAllByTitle(String title);
+    @Query("select post from PostEntity post where post.title like %:title%")
+    List<PostEntity> getAllByTitle(@Param("title") String title);
+    @Query("select post from PostEntity post where post.content like %:content%")
+    List<PostEntity> findAllByContent(@Param("content") String content);
+    @Query("select post from PostEntity post where post.creationDate > :creationDate")
+    List<PostEntity> findAllByCreationDateAfter(@Param("creationDate") LocalDateTime creationDate);
     List<PostEntity> findAllById(Long id);
 
     @Query("select post from PostEntity post where post.content like %:content% and post.creationDate > :creationDate")
     List<PostEntity> findAllByContentOrUpdateDate(@Param("content") String content, @Param("creationDate") LocalDateTime creationDate);
+
+    @Query("SELECT post " +
+            "FROM PostEntity post " +
+            "WHERE post.title like %:title% " +
+            "AND post.content like %:content% " +
+            "AND post.creationDate > :creationDate")
+    List<PostEntity> findAllByAllFilters(@Param("title") String title, @Param("content") String content, @Param("creationDate") LocalDateTime creationDate);
+
+    @Query("SELECT post " +
+            "FROM PostEntity post " +
+            "WHERE post.title like %:title% " +
+            "OR post.content like %:content% " +
+            "OR post.creationDate > :creationDate")
+    List<PostEntity> findAllByAnyFilters(@Param("title") String title, @Param("content") String content, @Param("creationDate") LocalDateTime creationDate);
+
 
 
     /*
