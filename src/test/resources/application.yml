@@ -1,6 +1,6 @@
 server:
-  port: 8500
-hostname: localhost:8500
+  port: 8086
+hostname: localhost:8086
 spring:
   application:
     name: post-service
