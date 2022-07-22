@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.toList;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/v1/followLink")
+@RequestMapping("/api/v1/post/followLink")
 public class FollowerController {
 
     private final UserService userService;

@@ -16,7 +16,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @RestController
-@RequestMapping("/api/v1/tag")
+@RequestMapping("/api/v1/post/tag")
 public class TagController {
 
     private final TagService tagService;
