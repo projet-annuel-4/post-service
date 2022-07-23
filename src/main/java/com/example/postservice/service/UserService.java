@@ -7,12 +7,12 @@ import com.example.postservice.data.repository.UserRepository;
 import com.example.postservice.data.request.UserRequest;
 import com.example.postservice.domain.mapper.UserMapper;
 import com.example.postservice.domain.model.UserModel;
+import com.example.postservice.util.Levenshtein;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -22,11 +22,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final FollowerRepository followerRepository;
+    private final Levenshtein levenshtein;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, FollowerRepository followerRepository) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, FollowerRepository followerRepository, Levenshtein levenshtein) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.followerRepository = followerRepository;
+        this.levenshtein = levenshtein;
     }
 
     public UserEntity createUser(UserEvent userEvent){
@@ -38,9 +40,19 @@ public class UserService {
     }
 
 
-    public UserModel getByFirstname(String firstname){
-        var user = userRepository.findByFirstname(firstname);
-        return UserMapper.entityToModel(user);
+    public List<UserModel> getByFirstname(String firstname){
+        var users = userRepository.findAll();
+        var usersFound = new ArrayList<UserEntity>();
+        users.forEach(user -> {
+            if(levenshtein.calculate(firstname.toUpperCase(), user.getFirstname().toUpperCase()) < 3){
+                usersFound.add(user);
+            }
+        });
+
+        return usersFound
+                .stream()
+                .map(UserMapper::entityToModel)
+                .collect(toList());
     }
 
     public UserModel getByEmail(String email){

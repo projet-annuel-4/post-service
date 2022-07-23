@@ -1,7 +1,6 @@
 package com.example.postservice.controller;
 
 
-import com.example.postservice.domain.mapper.PostMapper;
 import com.example.postservice.domain.mapper.UserMapper;
 import com.example.postservice.service.UserService;
 import com.sun.istack.NotNull;
@@ -34,7 +33,7 @@ public class UserController {
     @GetMapping("/firstname/{firstname}")
     public ResponseEntity<?> getByFirstname(@PathVariable @NotNull String firstname){
         var user = userService.getByFirstname(firstname);
-        if(user == null){
+        if(user.isEmpty()){
             return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
