@@ -19,7 +19,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/post")
 public class PostController {
