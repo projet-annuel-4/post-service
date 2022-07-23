@@ -30,4 +30,15 @@ public class UserController {
         }
         return new ResponseEntity<>(UserMapper.entityToModel(user.get()), HttpStatus.OK);
     }
+
+    @GetMapping("/firstname/{firstname}")
+    public ResponseEntity<?> getByFirstname(@PathVariable @NotNull String firstname){
+        var user = userService.getByFirstname(firstname);
+        if(user == null){
+            return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+
 }

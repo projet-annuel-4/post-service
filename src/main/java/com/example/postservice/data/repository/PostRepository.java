@@ -3,7 +3,9 @@ package com.example.postservice.data.repository;
 
 import com.example.postservice.data.entities.PostEntity;
 import com.example.postservice.data.entities.UserEntity;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface PostRepository extends JpaRepository<PostEntity, Long> {
+public interface PostRepository extends JpaRepository<PostEntity, Long>, JpaSpecificationExecutor<PostEntity> {
 
     PostEntity getById(Long id);
     List<PostEntity> getAllByUser(UserEntity user);
@@ -42,7 +44,8 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
             "OR post.creationDate > :creationDate")
     List<PostEntity> findAllByAnyFilters(@Param("title") String title, @Param("content") String content, @Param("creationDate") LocalDateTime creationDate);
 
-
+    @Override
+    List<PostEntity> findAll(Specification<PostEntity> spec);
 
     /*
            KO : retourne qu'une seule valeur

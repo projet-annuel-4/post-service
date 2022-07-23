@@ -4,11 +4,13 @@ package com.example.postservice.controller;
 import com.example.postservice.data.request.CommentRequest;
 import com.example.postservice.data.request.PostFilterRequest;
 import com.example.postservice.data.request.PostRequest;
+import com.example.postservice.data.request.SearchRequest;
 import com.example.postservice.data.response.PostResponse;
 import com.example.postservice.domain.mapper.AttachmentMapper;
 import com.example.postservice.domain.mapper.CommentMapper;
 import com.example.postservice.domain.mapper.PostMapper;
 import com.example.postservice.domain.mapper.TagMapper;
+import com.example.postservice.domain.model.PostModel;
 import com.example.postservice.service.*;
 import com.sun.istack.NotNull;
 import org.springframework.http.HttpStatus;
@@ -146,6 +148,12 @@ public class PostController {
                 .collect(toList());
 
         return new ResponseEntity<>(posts, HttpStatus.OK);
+    }
+
+    @PostMapping("/getAllByFilters")
+    public ResponseEntity<List<PostResponse>> getAllByFilters(@RequestBody SearchRequest request){
+        List<PostModel> postModels = postService.searchByFilters(request.getFilters());
+        return ResponseEntity.ok(postModels.stream().map(PostMapper::modelToResponse).collect(toList()));
     }
 
     /**

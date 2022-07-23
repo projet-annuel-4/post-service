@@ -6,8 +6,10 @@ import com.example.postservice.data.request.PostFilterRequest;
 import com.example.postservice.data.request.PostRequest;
 import com.example.postservice.domain.mapper.AttachmentMapper;
 import com.example.postservice.domain.mapper.PostMapper;
+import com.example.postservice.domain.mapper.SpecificationMapper;
 import com.example.postservice.domain.mapper.TagMapper;
 import com.example.postservice.domain.model.PostModel;
+import com.example.postservice.domain.model.SearchFilter;
 import com.example.postservice.util.DateTimeUtil;
 import com.google.common.collect.Sets;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -436,7 +439,6 @@ public class PostService {
         var posts = new ArrayList<PostModel>();
         subscriptionsLink.forEach(subscription -> posts.addAll(this.getAllByUser(subscription.getUser())));
 
-
         return sortPostByLocalDateTime(posts);
     }
 
@@ -453,6 +455,69 @@ public class PostService {
     }
 
 
+    private List<PostModel> sortPostByLocalDateTime(List<PostModel> posts){
+        Comparator<PostModel> comparator = Comparator.comparing(PostModel::getCreationDate);
+
+        posts.sort(comparator);
+
+        return posts;
+    }
+
+    public List<PostModel> searchByFilters(List<SearchFilter> filters){
+        List<SearchFilter> postQueryFilters = new ArrayList<>();
+        List<SearchFilter> filteredFilters = new ArrayList<>();
+        List<String> postQueryFiltersField = Arrays.asList("tags");
+        for (SearchFilter filter : filters){
+            if( !Collections.disjoint(Collections.singletonList(filter.getField()), postQueryFiltersField)){
+                postQueryFilters.add(filter);
+            } else {
+                filteredFilters.add(filter);
+            }
+        }
+        List<PostEntity> postEntities = new ArrayList<>();
+        if( filteredFilters.size() > 0) {
+            postEntities = postRepository.findAll(SpecificationMapper.FromSearchFilterToSpecification(filteredFilters));
+        }
+        if( postQueryFilters.size() == 0){
+            return postEntities.stream().map(PostMapper::entityToModel).collect(Collectors.toList());
+        }
+        if( postEntities.size() == 0){
+            postEntities = postRepository.findAll();
+        }
+        List<PostEntity> postEntitiesPostFiltered = getPostEntityByApplyingPostFilters(postQueryFilters, postEntities);
+
+        //TODO : Mapper les tags
+
+
+        return postEntitiesPostFiltered.stream().map(PostMapper::entityToModel).collect(Collectors.toList());
+    }
+
+    private List<PostEntity> getPostEntityByApplyingPostFilters(List<SearchFilter> filters, List<PostEntity> postEntities){
+        List<PostEntity> filteredPostEntities = new ArrayList<>();
+        for (int j = 0; j< filters.size(); j++){
+            for (int i = 0 ; i < postEntities.size(); i++){
+                if (filters.get(j).getField().equals("tags") ) {
+                    List<String> tagName = tagService.getAllTagNameByPostId(postEntities.get(i).getId());
+                    if(tagName == null){
+                        continue;
+                    }
+                    int size = tagName.size();
+                    tagName.removeAll(filters.get(j).getValues());
+                    if ( size != tagName.size() && size != 0){
+                        filteredPostEntities.add(postEntities.get(i));
+                    }
+                }
+            }
+            if( j == filters.size()-1 ){
+                break;
+            }
+            postEntities = new ArrayList<>(filteredPostEntities);
+            filteredPostEntities = new ArrayList<>();
+        }
+        return filteredPostEntities;
+    }
+
+
 
 
     private List<PostModel> addTagsToPostModelList(List<PostModel> postModelList){
@@ -466,14 +531,6 @@ public class PostService {
             postModel.setTags(postTags);
             posts.add(postModel);
         });
-
-        return posts;
-    }
-
-    private List<PostModel> sortPostByLocalDateTime(List<PostModel> posts){
-        Comparator<PostModel> comparator = Comparator.comparing(PostModel::getCreationDate);
-
-        posts.sort(comparator);
 
         return posts;
     }

@@ -37,6 +37,12 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+
+    public UserModel getByFirstname(String firstname){
+        var user = userRepository.findByFirstname(firstname);
+        return UserMapper.entityToModel(user);
+    }
+
     public UserModel getByEmail(String email){
         var user = userRepository.findByEmail(email);
         return UserMapper.entityToModel(user);
