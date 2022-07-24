@@ -489,10 +489,13 @@ public class PostService {
         }
         List<PostEntity> postEntitiesPostFiltered = getPostEntityByApplyingPostFilters(postQueryFilters, postEntities);
 
-        //TODO : Mapper les tags
 
+        var postModel =  postEntitiesPostFiltered
+                .stream()
+                .map(PostMapper::entityToModel)
+                .collect(Collectors.toList());
 
-        return postEntitiesPostFiltered.stream().map(PostMapper::entityToModel).collect(Collectors.toList());
+        return addTagsToPostModelList(postModel);
     }
 
     private List<PostEntity> getPostEntityByApplyingPostFilters(List<SearchFilter> filters, List<PostEntity> postEntities){

@@ -333,10 +333,6 @@ public class PostController {
      */
     @GetMapping("/subscriptions/userId/{userId}")
     public ResponseEntity<?> getAllSubscriptionsPost(@PathVariable Long userId){
-
-        //TODO : Faire l'appel au micro-service de groupe pour avoir les followers
-        //          voir exemple -> https://github.dev/only2dhir/spring-cloud-feign-example
-
         var user = userService.getById(userId);
         if(user.isEmpty()) return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
 
