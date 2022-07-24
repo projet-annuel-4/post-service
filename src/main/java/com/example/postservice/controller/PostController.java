@@ -150,12 +150,6 @@ public class PostController {
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
-    @PostMapping("/getAllByFilters")
-    public ResponseEntity<List<PostResponse>> getAllByFilters(@RequestBody SearchRequest request){
-        List<PostModel> postModels = postService.searchByFilters(request.getFilters());
-        return ResponseEntity.ok(postModels.stream().map(PostMapper::modelToResponse).collect(toList()));
-    }
-
     /**
      * @param userId : Id of the user
      * @return All user posts
@@ -225,6 +219,7 @@ public class PostController {
     }
 
     /**
+     * @deprecated
      * @apiNote BAD_REQUEST If the user only puts the tagName in the filter
      *                                          (there is a endpoint made for the getAllByTagName)
      * @param filters : PostFilterRequest(content, tagName, creationDate)
@@ -243,6 +238,12 @@ public class PostController {
                                                             .map(PostMapper::modelToResponse)
                                                             .collect(toList());
         return new ResponseEntity<>(postsResponses, HttpStatus.OK);
+    }
+
+    @PostMapping("/getAllByFilters")
+    public ResponseEntity<List<PostResponse>> getAllByFilters(@RequestBody SearchRequest request){
+        List<PostModel> postModels = postService.searchByFilters(request.getFilters());
+        return ResponseEntity.ok(postModels.stream().map(PostMapper::modelToResponse).collect(toList()));
     }
 
 
@@ -416,7 +417,7 @@ public class PostController {
     }
 
 
-    @DeleteMapping("{postId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<?> delete (@PathVariable Long postId){
         var post = postService.getById(postId);
         if(post == null){

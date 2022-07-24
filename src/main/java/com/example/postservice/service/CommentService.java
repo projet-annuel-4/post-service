@@ -4,7 +4,9 @@ import com.example.postservice.data.entities.CommentEntity;
 import com.example.postservice.data.entities.PostEntity;
 import com.example.postservice.data.entities.UserEntity;
 import com.example.postservice.data.repository.CommentRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +25,11 @@ public class CommentService {
                 .setAnswer(answer)
                 .setUser(user);
         return commentRepository.save(comment);
+    }
+
+
+    public void deleteAllByPostId(PostEntity postEntity){
+        commentRepository.deleteAllByPost(postEntity);
     }
 
 

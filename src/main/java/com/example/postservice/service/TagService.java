@@ -68,4 +68,8 @@ public class TagService {
         });
         return tagEntityList;
     }
+
+    public void deleteAllByPostId(Long post_id){
+        tagRepository.deleteAllByPostId(post_id);
+    }
 }

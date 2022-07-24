@@ -11,7 +11,6 @@ import com.example.postservice.domain.mapper.TagMapper;
 import com.example.postservice.domain.model.PostModel;
 import com.example.postservice.domain.model.SearchFilter;
 import com.example.postservice.util.DateTimeUtil;
-import com.google.common.collect.Sets;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,10 +34,11 @@ public class PostService {
     private final TagService tagService;
     private final TagMapper tagMapper;
     private final CommentRepository commentRepository;
+    private final CommentService commentService;
     private final FollowerService followerService;
     private final CodeService codeService;
 
-    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, AttachmentMapper attachmentMapper, AttachmentService attachmentService, TagRepository tagRepository, TagService tagService, TagMapper tagMapper, CommentRepository commentRepository, FollowerService followerService, CodeService codeService) {
+    public PostService(PostRepository postRepository, LikeRepository likeRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, AttachmentMapper attachmentMapper, AttachmentService attachmentService, TagRepository tagRepository, TagService tagService, TagMapper tagMapper, CommentRepository commentRepository, CommentService commentService, FollowerService followerService, CodeService codeService) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
@@ -49,6 +49,7 @@ public class PostService {
         this.tagService = tagService;
         this.tagMapper = tagMapper;
         this.commentRepository = commentRepository;
+        this.commentService = commentService;
         this.followerService = followerService;
         this.codeService = codeService;
     }
@@ -445,12 +446,14 @@ public class PostService {
     @Transactional
     public void delete(PostEntity post){
         attachmentRepository.deleteAllByPostId(post.getId());
-        tagRepository.deleteAllByPostId(post.getId());
-        likeRepository.deleteAllByPostId(post.getId());
-        commentRepository.deleteAllByPostId(post.getId());
         codeService.deleteAllByPostId(post.getId());
+        commentService.deleteAllByPostId(post);
+        tagService.deleteAllByPostId(post.getId());
+        likeRepository.deleteAllByPostId(post.getId());
 
         post.setUser(null);
+        postRepository.save(post);
+
         postRepository.deleteById(post.getId());
     }
 
