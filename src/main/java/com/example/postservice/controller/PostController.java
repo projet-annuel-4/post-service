@@ -421,7 +421,7 @@ public class PostController {
         }
         postService.delete(postMapper.modelToEntity(post));
 
-        return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

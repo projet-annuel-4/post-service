@@ -24,7 +24,7 @@ public class UserMapper {
                 .setLastname(userEntity.getLastname())
                 .setEmail(userEntity.getEmail())
                 .setNbFollowers(userEntity.getNbFollowers())
-                .setNbSubscription(userEntity.getNbSubscription());
+                .setNbSubscriptions(userEntity.getNbSubscription());
     }
 
     public UserRequest entityToRequest(UserEntity userEntity){
@@ -43,7 +43,7 @@ public class UserMapper {
                 .setLastname(userModel.getLastname())
                 .setEmail(userModel.getEmail())
                 .setNbFollowers(userModel.getNbFollowers())
-                .setNbSubscription(userModel.getNbSubscription());
+                .setNbSubscription(userModel.getNbSubscriptions());
     }
 
 

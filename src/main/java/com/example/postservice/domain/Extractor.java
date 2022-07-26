@@ -11,6 +11,7 @@ public class Extractor {
     public String getLanguageFromCodeSection(String content){
 
         Pattern p = Pattern.compile("`(.+?)`", Pattern.DOTALL);
+        //Pattern p = Pattern.compile("#(.+?)#", Pattern.DOTALL);
         Matcher m = p.matcher(content);
         m.find();
 
@@ -23,6 +24,7 @@ public class Extractor {
         //  #js# code1 #js#
 
         Pattern p = Pattern.compile("#(.+?)##", Pattern.DOTALL);
+        //Pattern p = Pattern.compile("#(.+?)#(.+?)#(.+?)#", Pattern.DOTALL);
         Matcher m = p.matcher(content);
 
         var codes = new ArrayList<String>();

@@ -6,7 +6,7 @@ public class UserModel {
     private String lastname;
     private String email;
     private Integer nbFollowers;
-    private Integer nbSubscription;
+    private Integer nbSubscriptions;
 
     public Long getId() {
         return id;
@@ -53,12 +53,12 @@ public class UserModel {
         return this;
     }
 
-    public Integer getNbSubscription() {
-        return nbSubscription;
+    public Integer getNbSubscriptions() {
+        return nbSubscriptions;
     }
 
-    public UserModel setNbSubscription(Integer nbSubscription) {
-        this.nbSubscription = nbSubscription;
+    public UserModel setNbSubscriptions(Integer nbSubscriptions) {
+        this.nbSubscriptions = nbSubscriptions;
         return this;
     }
 }

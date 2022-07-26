@@ -176,7 +176,7 @@ public class PostService {
 
         posts = addTagsToPostModelList(posts);
 
-        return posts;
+        return sortPostByLocalDateTime(posts);
     }
 
     public List<PostModel> getAllByTitle(String title){
@@ -448,6 +448,10 @@ public class PostService {
         attachmentRepository.deleteAllByPostId(post.getId());
         codeService.deleteAllByPostId(post.getId());
         commentService.deleteAllByPostId(post);
+        if(commentService.getById(post) != null){
+            commentService.deleteByAnswerId(post);
+        }
+
         tagService.deleteAllByPostId(post.getId());
         likeRepository.deleteAllByPostId(post.getId());
 
@@ -458,13 +462,6 @@ public class PostService {
     }
 
 
-    private List<PostModel> sortPostByLocalDateTime(List<PostModel> posts){
-        Comparator<PostModel> comparator = Comparator.comparing(PostModel::getCreationDate);
-
-        posts.sort(comparator);
-
-        return posts;
-    }
 
     public List<PostModel> searchByFilters(List<SearchFilter> filters){
         List<SearchFilter> postQueryFilters = new ArrayList<>();
@@ -523,8 +520,13 @@ public class PostService {
         return filteredPostEntities;
     }
 
+    private List<PostModel> sortPostByLocalDateTime(List<PostModel> posts){
+        Comparator<PostModel> comparator = Comparator.comparing(PostModel::getCreationDate);
 
+        posts.sort(comparator);
 
+        return posts;
+    }
 
     private List<PostModel> addTagsToPostModelList(List<PostModel> postModelList){
         var posts = new ArrayList<PostModel>();

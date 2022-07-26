@@ -27,6 +27,13 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
+    public CommentEntity getById(PostEntity postEntity){
+        return commentRepository.getById(postEntity.getId());
+    }
+
+    public void deleteByAnswerId(PostEntity postEntity){
+        commentRepository.deleteAllByAnswerId(postEntity.getId());
+    }
 
     public void deleteAllByPostId(PostEntity postEntity){
         commentRepository.deleteAllByPost(postEntity);
