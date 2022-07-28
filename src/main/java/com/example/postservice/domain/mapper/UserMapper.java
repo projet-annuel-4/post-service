@@ -12,6 +12,7 @@ public class UserMapper {
 
     public UserEntity eventToEntity(UserEvent userEvent){
         return new UserEntity()
+                .setId(userEvent.getId())
                 .setFirstname(userEvent.getFirstName())
                 .setLastname(userEvent.getLastName())
                 .setEmail(userEvent.getEmail());

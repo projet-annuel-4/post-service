@@ -32,7 +32,8 @@ public class UserService {
     }
 
     public UserEntity createUser(UserEvent userEvent){
-        return userRepository.save(userMapper.eventToEntity(userEvent));
+        var user = userMapper.eventToEntity(userEvent);
+        return userRepository.save(user);
     }
 
     public Optional<UserEntity> getById(Long userId){

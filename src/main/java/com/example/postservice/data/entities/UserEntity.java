@@ -1,16 +1,16 @@
 package com.example.postservice.data.entities;
 
-import com.example.postservice.domain.model.UserModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "users")
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstname;
     private String lastname;
@@ -18,12 +18,13 @@ public class UserEntity {
     private Integer nbFollowers;
     private Integer nbSubscription;
 
-    @Id
+
     public Long getId() {
         return id;
     }
-    public void setId(Long id) {
+    public UserEntity setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public String getFirstname() {
