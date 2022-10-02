@@ -4,6 +4,8 @@ import com.example.postservice.data.entities.CommentEntity;
 import com.example.postservice.data.entities.PostEntity;
 import com.example.postservice.data.entities.UserEntity;
 import com.example.postservice.data.repository.CommentRepository;
+import com.example.postservice.domain.mapper.PostMapper;
+import com.example.postservice.domain.model.PostModel;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,11 @@ public class CommentService {
 
     public CommentEntity getById(PostEntity postEntity){
         return commentRepository.getById(postEntity.getId());
+    }
+
+    public PostModel getPostOfTheAnswer(Long postId){
+        var commentEntity =  commentRepository.findCommentEntityByAnswerId(postId);
+        return PostMapper.entityToModel(commentEntity.getPost());
     }
 
     public void deleteByAnswerId(PostEntity postEntity){

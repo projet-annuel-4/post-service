@@ -365,6 +365,18 @@ public class PostController {
         return new ResponseEntity<>(commentMapper.entityToResponse(comment), HttpStatus.ACCEPTED);
     }
 
+    @GetMapping("answer/{answer_id}")
+    public ResponseEntity<?> getPostOfTheAnswers(@PathVariable Long answer_id){
+        var post = postService.getById(answer_id);
+        if(post == null){
+            return new ResponseEntity<>(POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        var postOfTheAnswers = commentService.getPostOfTheAnswer(post.getId());
+
+        return new ResponseEntity<>(PostMapper.modelToResponse(postOfTheAnswers), HttpStatus.ACCEPTED);
+    }
+
     /**
      * @param postId : Id of the post
      * @param userId : Id of the user who likes
