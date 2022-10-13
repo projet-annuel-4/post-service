@@ -2,27 +2,27 @@ package com.example.postservice.data.request;
 
 public class UserRequest {
 
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
     private String email;
     private Integer nbFollowers;
     private Integer nbSubscription;
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public UserRequest setFirstname(String firstname) {
-        this.firstname = firstname;
+    public UserRequest setFirstName(String firstName) {
+        this.firstName = firstName;
         return this;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public UserRequest setLastname(String lastname) {
-        this.lastname = lastname;
+    public UserRequest setLastName(String lastName) {
+        this.lastName = lastName;
         return this;
     }
 

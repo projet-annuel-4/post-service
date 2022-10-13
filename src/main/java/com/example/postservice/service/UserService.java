@@ -45,7 +45,7 @@ public class UserService {
         var users = userRepository.findAll();
         var usersFound = new ArrayList<UserEntity>();
         users.forEach(user -> {
-            if(levenshtein.calculate(firstname.toUpperCase(), user.getFirstname().toUpperCase()) < 3){
+            if(levenshtein.calculate(firstname.toUpperCase(), user.getFirstName().toUpperCase()) < 3){
                 usersFound.add(user);
             }
         });
@@ -63,8 +63,8 @@ public class UserService {
 
     public UserModel update(Long userId, UserRequest userRequest){
         var user = getById(userId).get()
-                .setFirstname(userRequest.getFirstname())
-                .setLastname(userRequest.getLastname())
+                .setFirstName(userRequest.getFirstName())
+                .setLastName(userRequest.getLastName())
                 .setEmail(userRequest.getEmail())
                 .setNbFollowers(followerRepository.countAllByUserId(userId))
                 .setNbSubscription(followerRepository.countAllByFollowerId(userId));
