@@ -170,6 +170,19 @@ public class PostController {
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
+    @GetMapping("/userId/{userId}/withoutAnswers")
+    public ResponseEntity<?> getAllWithoutAnswers(@PathVariable @NotNull Long userId){
+        var user = userService.getById(userId);
+        if(user.isEmpty()) return new ResponseEntity<>(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+
+        var posts = postService.getAllWithoutAnswers(user.get())
+                .stream()
+                .map(PostMapper::modelToResponse)
+                .collect(toList());
+
+        return new ResponseEntity<>(posts, HttpStatus.OK);
+    }
+
     @GetMapping("/title/{title}")
     public ResponseEntity<List<PostResponse>> getAllByTitle(@PathVariable String title){
         var postsByTitle = postService.getAllByTitle(title)

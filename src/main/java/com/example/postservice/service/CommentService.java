@@ -33,6 +33,10 @@ public class CommentService {
         return commentRepository.getById(postEntity.getId());
     }
 
+    public CommentEntity getByAnswerId(Long answerId){
+        return commentRepository.findByAnswerId(answerId);
+    }
+
     public PostModel getPostOfTheAnswer(Long postId){
         var commentEntity =  commentRepository.findCommentEntityByAnswerId(postId);
         return PostMapper.entityToModel(commentEntity.getPost());

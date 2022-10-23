@@ -442,6 +442,17 @@ public class PostService {
 
         return sortPostByLocalDateTime(posts);
     }
+    public List<PostModel> getAllWithoutAnswers(UserEntity userEntity){
+        var posts = getAllByUser(userEntity);
+
+        var res = new ArrayList<PostModel>();
+        posts.forEach(postModel -> {
+            var comment = commentService.getByAnswerId(postModel.getId());
+            if(comment == null) res.add(postModel);
+        });
+
+        return res;
+    }
 
     @Transactional
     public void delete(PostEntity post){
