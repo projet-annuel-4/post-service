@@ -12,8 +12,8 @@ import javax.persistence.Table;
 public class UserEntity {
     @Id
     private Long id;
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
     private String email;
     private Integer nbFollowers;
     private Integer nbSubscription;
@@ -27,21 +27,21 @@ public class UserEntity {
         return this;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public UserEntity setFirstname(String firstname) {
-        this.firstname = firstname;
+    public UserEntity setFirstName(String firstName) {
+        this.firstName = firstName;
         return this;
     }
 
     public String getLastname() {
-        return lastname;
+        return lastName;
     }
 
-    public UserEntity setLastname(String lastname) {
-        this.lastname = lastname;
+    public UserEntity setLastName(String lastName) {
+        this.lastName = lastName;
         return this;
     }
 

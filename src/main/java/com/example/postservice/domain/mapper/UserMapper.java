@@ -13,16 +13,16 @@ public class UserMapper {
     public UserEntity eventToEntity(UserEvent userEvent){
         return new UserEntity()
                 .setId(userEvent.getId())
-                .setFirstname(userEvent.getFirstName())
-                .setLastname(userEvent.getLastName())
+                .setFirstName(userEvent.getFirstName())
+                .setLastName(userEvent.getLastName())
                 .setEmail(userEvent.getEmail());
     }
 
     public static UserModel entityToModel(UserEntity userEntity){
         return new UserModel()
                 .setId(userEntity.getId())
-                .setFirstname(userEntity.getFirstname())
-                .setLastname(userEntity.getLastname())
+                .setFirstName(userEntity.getFirstName())
+                .setLastName(userEntity.getLastname())
                 .setEmail(userEntity.getEmail())
                 .setNbFollowers(userEntity.getNbFollowers())
                 .setNbSubscriptions(userEntity.getNbSubscription());
@@ -30,8 +30,8 @@ public class UserMapper {
 
     public UserRequest entityToRequest(UserEntity userEntity){
         return new UserRequest()
-                .setFirstname(userEntity.getFirstname())
-                .setLastname(userEntity.getLastname())
+                .setFirstName(userEntity.getFirstName())
+                .setLastName(userEntity.getLastname())
                 .setEmail(userEntity.getEmail())
                 .setNbFollowers(userEntity.getNbFollowers())
                 .setNbSubscription(userEntity.getNbSubscription());
@@ -40,8 +40,8 @@ public class UserMapper {
     public static UserResponse modelToResponse(UserModel userModel){
         return new UserResponse()
                 .setId(userModel.getId())
-                .setFirstname(userModel.getFirstname())
-                .setLastname(userModel.getLastname())
+                .setFirstname(userModel.getFirstName())
+                .setLastname(userModel.getLastName())
                 .setEmail(userModel.getEmail())
                 .setNbFollowers(userModel.getNbFollowers())
                 .setNbSubscription(userModel.getNbSubscriptions());

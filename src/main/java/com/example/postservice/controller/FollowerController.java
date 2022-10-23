@@ -44,6 +44,18 @@ public class FollowerController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
+    @GetMapping("{idUser1}/follow/{idUser2}")
+    public ResponseEntity<String> isFollowing(@PathVariable Long idUser1, @PathVariable Long idUser2){
+        var user1 = userService.getById(idUser1);
+        var user2 = userService.getById(idUser2);
+
+        var alreadyFollow = followerService.getByFollowerAndUser(user1.get(), user2.get());
+        if(alreadyFollow != null) {
+            return new ResponseEntity<String>(HttpStatus.OK);
+        }
+        return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
+    }
+
     /**
      * User1 unfollow the user2
      * @param idUser1 : Id of the user who wants to unfollow the user 2
