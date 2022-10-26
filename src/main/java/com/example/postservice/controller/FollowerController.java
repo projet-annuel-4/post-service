@@ -80,10 +80,10 @@ public class FollowerController {
         if(user.isEmpty()) return new ResponseEntity<>("User " + userId + " not found", HttpStatus.NOT_FOUND);
 
 
-        var followers = userService.getAllFollowers(userId)
-                .stream()
-                .map(UserMapper::modelToResponse)
-                .collect(toList());
+        var followers = userService.getAllFollowers(userId);
+                //.stream()
+                //.map(UserMapper::modelToResponse)
+                //.collect(toList());
 
         return new ResponseEntity<>(followers, HttpStatus.OK);
     }
@@ -94,10 +94,10 @@ public class FollowerController {
         if(user.isEmpty()) return new ResponseEntity<>("User " + userId + " not found", HttpStatus.NOT_FOUND);
 
 
-        var followers = userService.getAllSubscriptions(userId)
-                .stream()
-                .map(UserMapper::modelToResponse)
-                .collect(toList());
+        var followers = userService.getAllSubscriptions(userId);
+                //.stream()
+                //.map(UserMapper::modelToResponse)
+                //.collect(toList());
 
         return new ResponseEntity<>(followers, HttpStatus.OK);
     }
