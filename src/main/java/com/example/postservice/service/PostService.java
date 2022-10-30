@@ -1,6 +1,9 @@
 package com.example.postservice.service;
 
-import com.example.postservice.data.entities.*;
+import com.example.postservice.data.entities.LikeEntity;
+import com.example.postservice.data.entities.PostEntity;
+import com.example.postservice.data.entities.TagEntity;
+import com.example.postservice.data.entities.UserEntity;
 import com.example.postservice.data.repository.*;
 import com.example.postservice.data.request.PostFilterRequest;
 import com.example.postservice.data.request.PostRequest;
@@ -56,7 +59,7 @@ public class PostService {
 
 
     public PostModel create(PostRequest postRequest, UserEntity user){
-
+        System.out.println(user);
         //Premier enregistrement pour avoir l'id du post
         var post = new PostEntity()
                 .setTitle(postRequest.getTitle())
@@ -65,6 +68,7 @@ public class PostService {
                 .setCreationDate(LocalDateTime.now())
                 .setUpdateDate(null)
                 .setUser(user);
+        System.out.println(post);
         postRepository.save(post);
 
         if(!postRequest.getTagsName().isEmpty()) {
@@ -352,13 +356,13 @@ public class PostService {
         return searchIntersection(new ArrayList<>(union));
     }
 
-    public List<PostModel> getAllWithFilterV4(PostFilterRequest filters){
-        Predicate<PostEntity> postByTitle = e -> filters.getTitle().isEmpty()?true:Objects.equals(e.getTitle(),filters.getTitle());
-        Predicate<PostEntity> postByContent = e -> filters.getContent().isEmpty()?true:Objects.equals(e.getContent(),filters.getContent());
+    public List<PostModel> getAllWithFilterV4(PostFilterRequest filters) {
+        Predicate<PostEntity> postByTitle = e -> filters.getTitle().isEmpty() || Objects.equals(e.getTitle(), filters.getTitle());
+        Predicate<PostEntity> postByContent = e -> filters.getContent().isEmpty() || Objects.equals(e.getContent(), filters.getContent());
 
         //var tagName = tagRepository.findTagEntitiesByName(filters.getTagName());
         //Predicate<PostEntity> postByTagName = e -> filters.getTagName().isEmpty()?true:Objects.equals(e.get,filters.getTagName());
-        Predicate<PostEntity> postByCreationDate = e -> filters.getCreationDate().isEmpty()?true:Objects.equals(e.getCreationDate(),filters.getCreationDate());
+        Predicate<PostEntity> postByCreationDate = e -> filters.getCreationDate().isEmpty() || Objects.equals(e.getCreationDate(), filters.getCreationDate());
 
 
         var postFound = postRepository.findAll()
@@ -477,7 +481,7 @@ public class PostService {
     public List<PostModel> searchByFilters(List<SearchFilter> filters){
         List<SearchFilter> postQueryFilters = new ArrayList<>();
         List<SearchFilter> filteredFilters = new ArrayList<>();
-        List<String> postQueryFiltersField = Arrays.asList("tags");
+        List<String> postQueryFiltersField = List.of("tags");
         for (SearchFilter filter : filters){
             if( !Collections.disjoint(Collections.singletonList(filter.getField()), postQueryFiltersField)){
                 postQueryFilters.add(filter);

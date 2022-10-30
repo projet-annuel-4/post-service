@@ -32,6 +32,7 @@ public class UserService {
     }
 
     public UserEntity createUser(UserEvent userEvent){
+        System.out.println(userEvent);
         var user = userMapper.eventToEntity(userEvent);
         return userRepository.save(user);
     }

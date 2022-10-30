@@ -71,4 +71,16 @@ public class UserEntity {
         this.nbSubscription = nbSubscription;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", nbFollowers=" + nbFollowers +
+                ", nbSubscription=" + nbSubscription +
+                '}';
+    }
 }

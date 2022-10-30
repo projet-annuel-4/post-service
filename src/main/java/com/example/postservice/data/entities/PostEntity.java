@@ -84,4 +84,16 @@ public class PostEntity {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "PostEntity{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", nbLike=" + nbLike +
+                ", creationDate=" + creationDate +
+                ", updateDate=" + updateDate +
+                ", user=" + user +
+                '}';
+    }
 }
