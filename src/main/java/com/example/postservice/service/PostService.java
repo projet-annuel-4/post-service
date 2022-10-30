@@ -442,7 +442,7 @@ public class PostService {
         var subscriptionsLink = followerService.getSubscriptionsByUserId(userId);
 
         var posts = new ArrayList<PostModel>();
-        subscriptionsLink.forEach(subscription -> posts.addAll(this.getAllByUser(subscription.getUser())));
+        subscriptionsLink.forEach(subscription -> posts.addAll(this.getAllWithoutAnswers(subscription.getUser())));
 
         return sortPostByLocalDateTime(posts);
     }
