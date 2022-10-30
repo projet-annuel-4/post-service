@@ -24,9 +24,6 @@ spring:
         createdUserConsumer-in-0:
           destination: "user-created"
           content-type: application/json
-        createdGroupConsumer-in-0:
-          destination: "group-created"
-          content-type: application/json
   servlet:
     multipart:
       max-request-size: 10MB
